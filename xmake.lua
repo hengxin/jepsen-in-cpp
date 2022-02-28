@@ -8,6 +8,9 @@ target("control")
     add_files("src/*.cpp")
     add_files("src/control/*.cpp")
     add_packages("libssh2")
+    if is_plat("linux") then
+        add_syslinks("pthread")
+    end    
 
 target("libssh2-example-ssh2")
     set_kind("binary")
