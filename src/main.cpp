@@ -27,5 +27,6 @@ void testMultiThreadSSH(){
 }
 
 int main(int argc, char** argv){
+    testMultiThreadSSH();
     return 0;
 }

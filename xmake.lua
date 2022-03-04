@@ -1,26 +1,78 @@
 add_rules("mode.debug", "mode.release")
+
 add_requires("libssh2")
+add_requires("log4cplus")
+add_requires("jsoncpp")
+
 set_languages("cxx17")
 
-
+-- Src
 target("control")
     set_kind("binary")
     add_files("src/*.cpp")
     add_files("src/control/*.cpp")
     add_packages("libssh2")
+    add_packages("log4cplus")
+    add_packages("jsoncpp")
     if is_plat("linux") then
         add_syslinks("pthread")
     end    
 
-target("libssh2-example-ssh2")
+-- 2. Test
+--- 2.1 Test source
+---- Test for operation
+target("test-operation")
     set_kind("binary")
-    add_files("src/examples/ssh2.cpp")
+    add_files("test/operation/*.cpp")
+    add_files("src/operation/*.cpp")
+    add_includedirs("src/include")
+    add_includedirs("src/operation")
+    add_packages("jsoncpp")
+    add_packages("log4cplus")
+
+target("test-runner")
+    set_kind("binary")
+    add_files("test/runner/*.cpp")
+    add_files("src/runner/*.cpp")
+    add_files("src/operation/*.cpp")
+    add_includedirs("src/include")
+    add_includedirs("src/runner")
+    add_includedirs("src/os")
+    add_includedirs("src/database")
+    add_includedirs("src/operation")
+    add_includedirs("src/client")
+    add_includedirs("src/config")
+    add_includedirs("src/nemesis")
+    add_includedirs("src/generator")
+    add_includedirs("src/checker")
+    add_packages("jsoncpp")
+    add_packages("log4cplus")
     add_packages("libssh2")
 
-target("libssh2-example-ssh2_exec")
+--- 2.2 Test Third Party
+---- Test for libssh2
+target("test-libssh2--ssh2")
     set_kind("binary")
-    add_files("src/examples/ssh2_exec.cpp")
+    add_files("test/libssh2/ssh2.cpp")
     add_packages("libssh2")
+
+target("test-libssh2-ssh2-exec")
+    set_kind("binary")
+    add_files("test/libssh2/ssh2_exec.cpp")
+    add_packages("libssh2")
+
+---- Test for log4cplus
+target("test-log4cplus")
+    set_kind("binary")
+    add_files("test/log4cplus/hello-world.cpp")
+    add_packages("log4cplus")
+
+---- Test for jsoncpp
+target("test-jsoncpp")
+    set_kind("binary")
+    add_files("test/jsoncpp/main.cpp")
+    add_packages("jsoncpp")
+
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
