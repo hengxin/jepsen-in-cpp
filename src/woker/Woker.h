@@ -2,6 +2,7 @@
 #define WORKER_H
 
 #include "include.h"
+#include "Operation.h"
 
 class Worker {
     virtual bool open(int id);

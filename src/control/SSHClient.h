@@ -40,11 +40,20 @@ class SSHClient {
                 fprintf(stderr, "connecTo %s failed\n", ip_addr.c_str());
             }
         };
+    SSHClient(const SSHClient& sshClient);
     ~SSHClient(){
         fprintf(stderr, "SSHClient: Destructing\n");
         disConnect();
         libssh2_exit(); // TODO: When multi-thread, should be call how many times
     };
+
+    SSHClient& operator=(const SSHClient& rhs) {
+        fprintf(stderr, "SSHClient: Assign Operator\n");
+        if(this == &rhs) {
+            return *this;
+        }
+        SSHClient(rhs.ip_addr, rhs.username, rhs.password, rhs.port);
+    }
 
     void execute(const string command);
     bool connectTo();

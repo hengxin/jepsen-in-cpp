@@ -24,8 +24,21 @@ void Runner::initLogger() {
 
 }
 
+void Runner::initSSHClients() {
+    LOG4CPLUS_INFO(logger, "Start Initialize SSHClients");
+    ssh_clients.reserve(nodes.size());
+    for(auto ip_addr: nodes){
+        ssh_clients.emplace_back(ip_addr, ssh.username, ssh.password, ssh.port);
+    }
+    LOG4CPLUS_INFO(logger, "End Initialize SSHClients");
+}
+
 void Runner::run() {
     LOG4CPLUS_INFO(logger, "Runner start running");
-
+    // 获取到各个节点的链接
+    for(auto& client: ssh_clients){
+        client.execute("uptime");
+    }
+    
     LOG4CPLUS_INFO(logger, "Runner end running");
 }

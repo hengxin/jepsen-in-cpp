@@ -1,6 +1,11 @@
 #include "SSHClient.h"
 #include "SSHChannel.h"
 
+SSHClient::SSHClient(const SSHClient& sshClient) {
+    fprintf(stderr, "SSHClient: Copy Constructor\n");
+    SSHClient(sshClient.ip_addr, sshClient.username, sshClient.password, sshClient.port);
+}
+
 bool SSHClient::connectTo(){
 
     fprintf(stderr, "Call SSHClient::connectTo\n");
@@ -143,6 +148,10 @@ bool SSHClient::disConnect(){
 
 void SSHClient::execute(const string command){
     fprintf(stderr, "--- Executing %s\n", command.c_str());
+
+    if(session == nullptr || sock == kSocketInit) {
+        connectTo();
+    }
     SSHChannel channel(session, sock);
     channel.exec(command, session);
 }

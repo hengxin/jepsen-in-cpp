@@ -9,6 +9,7 @@
 #include "Nemesis.h"
 #include "Generator.h"
 #include "Checker.h"
+#include "SSHClient.h"
 
 struct SSHInfo {
     string username;
@@ -26,9 +27,11 @@ public:
     Runner() = delete;
     Runner(vector<string>& nodes, int concurrency, SSHInfo& ssh): nodes(nodes), concurrency(concurrency), ssh(ssh) {
         this->initLogger();
+        this->initSSHClients();
     }
     void run();
     void initLogger();
+    void initSSHClients();
     
 private:
     vector<string> nodes;
@@ -41,6 +44,8 @@ private:
     Generator generator;
     Checker checker;
     vector<Operation> history;
+
+    vector<SSHClient> ssh_clients;
 
     log4cplus::Logger logger;
     bool leave_db_running;
