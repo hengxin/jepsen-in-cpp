@@ -2,13 +2,21 @@
 #include "SSHChannel.h"
 
 SSHClient::SSHClient(const SSHClient& sshClient) {
-    fprintf(stderr, "SSHClient: Copy Constructor\n");
+    LOG4CPLUS_DEBUG(logger, "SSHClient: Copy Constructor");
     SSHClient(sshClient.ip_addr, sshClient.username, sshClient.password, sshClient.port);
+}
+
+void SSHClient::getConnection() {
+    if(connectTo()) {             
+        LOG4CPLUS_DEBUG(logger, LOG4CPLUS_TEXT("connect to ") << ip_addr.c_str() << LOG4CPLUS_TEXT("successfully"));
+    }else{
+        LOG4CPLUS_DEBUG(logger, LOG4CPLUS_TEXT("connect to ") << ip_addr.c_str() << LOG4CPLUS_TEXT("failed"));
+    }
 }
 
 bool SSHClient::connectTo(){
 
-    fprintf(stderr, "Call SSHClient::connectTo\n");
+    LOG4CPLUS_DEBUG(logger, "Call SSHClient::connectTo");
 
     struct sockaddr_in sin;
     int rc;
@@ -28,7 +36,7 @@ bool SSHClient::connectTo(){
     sin.sin_addr.s_addr = host_addr; // unsigned long for ip address
     
     if(connect(sock, (struct sockaddr*)(&sin), sizeof(struct sockaddr_in)) != 0) {
-        fprintf(stderr, "SSHClient::connectTo failed to connect by a socket!\n");
+        LOG4CPLUS_ERROR(logger, "SSHClient::connectTo failed to connect by a socket!");
         return false;
     }
 
@@ -38,7 +46,7 @@ bool SSHClient::connectTo(){
      * */
     session = libssh2_session_init();
     if(session == nullptr) {
-        fprintf(stderr, "SSHClient::connectTo failed to init session!\n");
+        LOG4CPLUS_ERROR(logger, "SSHClient::connectTo failed to init session!");
         return false;
     }
 
@@ -49,7 +57,7 @@ bool SSHClient::connectTo(){
     while((rc = libssh2_session_handshake(session, sock)) == LIBSSH2_ERROR_EAGAIN);
     
     if(rc) {
-        fprintf(stderr, "Failure establishing SSH session: %d\n", rc);
+        LOG4CPLUS_ERROR(logger, LOG4CPLUS_TEXT("Failure establishing SSH session:") << rc);
         return false;
     }
 
@@ -86,9 +94,12 @@ bool SSHClient::connectTo(){
                                             LIBSSH2_KNOWNHOST_KEYENC_RAW,
                                             &host);
 #endif
-        fprintf(stderr, "Host check: %d, key: %s\n", check,
-                (check <= LIBSSH2_KNOWNHOST_CHECK_MISMATCH)?
-                host->key:"<none>");
+        if(check > LIBSSH2_KNOWNHOST_CHECK_MISMATCH) {
+            // TODO: Logger
+            fprintf(stderr, "Host check: %d, key: %s\n", check,
+                    (check <= LIBSSH2_KNOWNHOST_CHECK_MISMATCH)?
+                    host->key:"<none>");
+        }
         /*****
          * At this point, we could verify that 'check' tells us the key is
          * fine or bail out.
@@ -104,7 +115,7 @@ bool SSHClient::connectTo(){
         /* We could authenticate via password */ 
         while((rc = libssh2_userauth_password(session, username.c_str(), password.c_str())) == LIBSSH2_ERROR_EAGAIN);    
         if(rc) {
-            fprintf(stderr, "\tAuthentication by password failed\n");
+            LOG4CPLUS_ERROR(logger, "\tAuthentication by password failed");
             disConnect();
             return false;    
         }
@@ -118,7 +129,7 @@ bool SSHClient::connectTo(){
                                                          password.c_str())) ==
                LIBSSH2_ERROR_EAGAIN);
         if(rc) {
-            fprintf(stderr, "\tAuthentication by public key failed\n");
+            LOG4CPLUS_ERROR(logger, "\tAuthentication by public key failed");
             disConnect();
             return false;    
         }
@@ -128,7 +139,7 @@ bool SSHClient::connectTo(){
 }
 
 bool SSHClient::disConnect(){
-    fprintf(stderr, "SSHClient::disConnect\n");
+    LOG4CPLUS_DEBUG(logger, "SSHClient::disConnect");
     if(session != nullptr){
         libssh2_session_disconnect(session, "Normal Shutdown, Thank you for playing");
         libssh2_session_free(session);
@@ -147,7 +158,7 @@ bool SSHClient::disConnect(){
 }
 
 void SSHClient::execute(const string command){
-    fprintf(stderr, "--- Executing %s\n", command.c_str());
+    LOG4CPLUS_DEBUG(logger, LOG4CPLUS_TEXT("--- Executing " << command.c_str()));
 
     if(session == nullptr || sock == kSocketInit) {
         connectTo();

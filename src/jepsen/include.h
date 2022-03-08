@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include <log4cplus/logger.h> // log4cplus
 #include <log4cplus/initializer.h>
@@ -19,5 +20,6 @@
 
 using std::string;
 using std::vector;
+using std::unordered_map;
 
 #endif

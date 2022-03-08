@@ -9,7 +9,7 @@
 #include "Nemesis.h"
 #include "Generator.h"
 #include "Checker.h"
-#include "SSHClient.h"
+#include "SSHRemote.h"
 
 struct SSHInfo {
     string username;
@@ -25,13 +25,14 @@ struct SSHInfo {
 class Runner {
 public:
     Runner() = delete;
-    Runner(vector<string>& nodes, int concurrency, SSHInfo& ssh): nodes(nodes), concurrency(concurrency), ssh(ssh) {
+    Runner(vector<string>& nodes, int concurrency, SSHInfo& ssh)
+        : nodes(nodes), concurrency(concurrency), ssh(ssh), logger(log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"))) {
         this->initLogger();
-        this->initSSHClients();
+        this->initRemotes();
     }
     void run();
     void initLogger();
-    void initSSHClients();
+    void initRemotes();
     
 private:
     vector<string> nodes;
@@ -45,7 +46,8 @@ private:
     Checker checker;
     vector<Operation> history;
 
-    vector<SSHClient> ssh_clients;
+    // vector<SSHClient> ssh_clients;
+    unordered_map<string, unique_ptr<SSHRemote>> remotes;
 
     log4cplus::Logger logger;
     bool leave_db_running;

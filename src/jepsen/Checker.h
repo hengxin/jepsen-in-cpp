@@ -2,7 +2,7 @@
 #define CHECKER_H
 
 class Checker {
-
+    
 };
 
 #endif

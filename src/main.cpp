@@ -1,5 +1,5 @@
 #include <iostream>
-#include "control/SSHClient.h"
+#include "jepsen/SSHClient.h"
 #include <thread>
 
 using std::cout;

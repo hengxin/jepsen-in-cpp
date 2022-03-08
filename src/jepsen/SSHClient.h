@@ -2,6 +2,7 @@
 #define SSH_CLIENT_H
 
 #include "SSHConfig.h"
+#include "RemoteSpec.h"
 
 using std::string;
 using std::shared_ptr;
@@ -13,14 +14,17 @@ using std::endl;
 
 static mutex init_mutex; // mutex for libssh2_init which is not thread safe
 
+
+
 class SSHClient {
  public:
     const int kSocketInit = -1;
  public:
     SSHClient() = delete;
+    SSHClient(ConnSpec conn) : SSHClient(conn.host, conn.username, conn.password, conn.port){}
     SSHClient(string ip_addr, string username, string password, int port=22)
-        :ip_addr(ip_addr), port(port), username(username), password(password) {
-            fprintf(stderr, "SSHClient: Constructing\n");
+        :ip_addr(ip_addr), port(port), username(username), password(password), logger(log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"))) {
+            LOG4CPLUS_DEBUG(logger, "SSHClient: Constructing");
             {
                 // libssh2_init is not thread safe
                 lock_guard<mutex> lck(init_mutex);
@@ -33,29 +37,26 @@ class SSHClient {
             host_addr = inet_addr(ip_addr.c_str());
             sock = kSocketInit;
             session = nullptr;
-            // TODO: In construction or separate?
-            if(connectTo()) {             
-                fprintf(stderr, "connecTo %s successfully\n", ip_addr.c_str());
-            }else{
-                fprintf(stderr, "connecTo %s failed\n", ip_addr.c_str());
-            }
         };
     SSHClient(const SSHClient& sshClient);
     ~SSHClient(){
-        fprintf(stderr, "SSHClient: Destructing\n");
+        LOG4CPLUS_DEBUG(logger, "~SSHClient: Destructing");
         disConnect();
         libssh2_exit(); // TODO: When multi-thread, should be call how many times
     };
 
     SSHClient& operator=(const SSHClient& rhs) {
-        fprintf(stderr, "SSHClient: Assign Operator\n");
+        LOG4CPLUS_DEBUG(logger, "SSHClient: Assign Operator");
         if(this == &rhs) {
             return *this;
         }
+
         SSHClient(rhs.ip_addr, rhs.username, rhs.password, rhs.port);
+        return *this;
     }
 
     void execute(const string command);
+    void getConnection();
     bool connectTo();
     bool disConnect(); 
 
@@ -70,6 +71,8 @@ class SSHClient {
 
     int sock; // socket
     LIBSSH2_SESSION* session;
+
+    log4cplus::Logger logger;
 };
 
 #endif
