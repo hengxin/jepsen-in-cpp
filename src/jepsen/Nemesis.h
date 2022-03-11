@@ -1,8 +1,6 @@
 #ifndef NEMESIS_H
 #define NEMESIS_H
 
-class Nemesis {
-
-};
+class Nemesis {};
 
 #endif

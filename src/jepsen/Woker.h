@@ -1,8 +1,8 @@
 #ifndef WORKER_H
 #define WORKER_H
 
-#include "include.h"
 #include "Operation.h"
+#include "include.h"
 
 class Worker {
     virtual bool open(int id);
@@ -10,14 +10,9 @@ class Worker {
     virtual bool close();
 };
 
-class ClientWorker: public Worker {
+class ClientWorker : public Worker {};
 
-};
-
-class NemesisWorker: public Worker {
-
-};
-
+class NemesisWorker : public Worker {};
 
 
 #endif

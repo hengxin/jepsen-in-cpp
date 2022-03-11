@@ -1,12 +1,12 @@
-#include <iostream>
 #include "jepsen/SSHClient.h"
+#include <iostream>
 #include <thread>
 
 using std::cout;
 using std::endl;
 using std::thread;
 
-void remoteWorks(int tid){
+void remoteWorks(int tid) {
 
     printf("[Thread %d] Testing in c++ version of %l", tid, __cplusplus);
 
@@ -19,14 +19,14 @@ void remoteWorks(int tid){
     cout << "Testing for control end" << endl;
 }
 
-void testMultiThreadSSH(){
+void testMultiThreadSSH() {
     thread t1(remoteWorks, 0);
     thread t2(remoteWorks, 1);
     t1.join();
     t2.join();
 }
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
     testMultiThreadSSH();
     return 0;
 }

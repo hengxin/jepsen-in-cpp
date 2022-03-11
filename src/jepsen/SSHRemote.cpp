@@ -1,7 +1,7 @@
 #include "SSHRemote.h"
 
-SSHRemote& SSHRemote::operator=(const SSHRemote& rhs){
-    if(this == &rhs){
+SSHRemote& SSHRemote::operator=(const SSHRemote& rhs) {
+    if (this == &rhs) {
         return *this;
     }
     this->concurrency_limit = rhs.concurrency_limit;
@@ -10,22 +10,14 @@ SSHRemote& SSHRemote::operator=(const SSHRemote& rhs){
     return *this;
 }
 
-void SSHRemote::connect(ConnSpec conn_spec) {
+void SSHRemote::connect(ConnSpec conn_spec) {}
 
-}
-
-void SSHRemote::disconnect() {
-
-}
+void SSHRemote::disconnect() {}
 
 int SSHRemote::execute(Context ctx, string cmd, string in) {
-
-} 
-
-void SSHRemote::upload(Context ctx, string local_path, string remote_path) {
-
+    ssh_client.execute(cmd);
 }
 
-void SSHRemote::download(Context ctx, string remote_path, string local_path) {
+void SSHRemote::upload(Context ctx, string local_path, string remote_path) {}
 
-}  
+void SSHRemote::download(Context ctx, string remote_path, string local_path) {}

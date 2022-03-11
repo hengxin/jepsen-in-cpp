@@ -1,7 +1,7 @@
 #include "Operation.h"
 
 Operation& Operation::operator=(const Operation& rhs) {
-    if(this == &rhs) {
+    if (this == &rhs) {
         return *this;
     }
 
@@ -14,7 +14,7 @@ Operation& Operation::operator=(const Operation& rhs) {
 
 string& Operation::getType() {
     return this->type;
-} 
+}
 
 Operation::OPInfo& Operation::getOp() {
     return this->op;
