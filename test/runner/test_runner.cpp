@@ -17,7 +17,8 @@ int main() {
     shared_ptr<OS> os = std::make_shared<Ubuntu>();
     runner.setOS(os);
     // Initialize Database
-    shared_ptr<DB> db = std::make_shared<DB>();
+    shared_ptr<DB> db = std::make_shared<ETCD>(ETCD(nodes));
+    runner.setDB(db);
 
     runner.run();
 

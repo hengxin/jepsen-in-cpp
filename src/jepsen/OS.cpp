@@ -1,7 +1,7 @@
 #include "OS.h"
 
 void OS::initRemotes(unordered_map<string, shared_ptr<SSHRemote>>& remotes) {
-    this->remotes = remotes;
+    this->remotes = remotes;  // TODO: Deep copy?
 }
 
 bool Ubuntu::setup(string node) {

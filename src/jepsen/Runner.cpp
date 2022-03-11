@@ -44,6 +44,7 @@ void Runner::setOS(shared_ptr<OS>& os) {
 
 void Runner::setDB(shared_ptr<DB>& db) {
     this->db = db;
+    this->db->initRemotes(remotes);
 }
 void Runner::setClient(shared_ptr<Client>& client) {
     this->client = client;
@@ -64,15 +65,45 @@ void Runner::setChecker(shared_ptr<Checker>& checker) {
 
 void Runner::run() {
     LOG4CPLUS_INFO(logger, "Runner start running");
+
     LOG4CPLUS_INFO(logger, "Runner start setup remote operating system");
     for (auto node : nodes) {
         os->setup(node);
     }
 
+    LOG4CPLUS_INFO(logger, "Runner start teardown remote database");
+    for (auto node : nodes) {
+        os->teardown(node);
+    }
+
+    LOG4CPLUS_INFO(logger, "Runner start setup remote database");
+    for (auto node : nodes) {
+        db->setup(node);
+    }
+
+    // Setup Primary if it exists
+    {
+        DBPrimaryInterface* primary_db;
+        if ((primary_db = dynamic_cast<DBPrimaryInterface*>(db.get())) != nullptr) {
+            LOG4CPLUS_INFO(logger, "Runner set up primaries of databases");
+            auto primaries = primary_db->getPrimaries();
+            for (auto primary : primaries) {
+                primary_db->setupPrimary(primary);
+            }
+        } else {
+            LOG4CPLUS_INFO(logger, "NO Primary");
+        }
+    }
+
+
+    for (auto node : nodes) {
+        db->teardown(node);
+    }
+    LOG4CPLUS_INFO(logger, "Runner finish teardown remote database");
 
     for (auto node : nodes) {
         os->teardown(node);
     }
-    LOG4CPLUS_INFO(logger, "Runner end teardown remote operating system");
-    LOG4CPLUS_INFO(logger, "Runner end running");
+    LOG4CPLUS_INFO(logger, "Runner finish teardown remote operating system");
+    LOG4CPLUS_INFO(logger, "Runner finish running");
 }
