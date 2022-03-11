@@ -84,6 +84,7 @@ void Runner::run() {
         db->setup(node);
     }
 
+
     // Setup Primary if it exists
     {
         DBPrimaryInterface* primary_db;

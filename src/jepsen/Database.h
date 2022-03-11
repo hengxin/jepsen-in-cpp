@@ -31,14 +31,5 @@ public:
     virtual bool setupPrimary(string node) = 0;
 };
 
-class ETCD : public DB, public DBPrimaryInterface {
-public:
-    ETCD(vector<string> nodes) : DB(nodes) {}
-    virtual bool setup(string node) override;
-    virtual bool teardown(string node) override;
-
-    virtual vector<string> getPrimaries() override;
-    virtual bool setupPrimary(string node) override;
-};
 
 #endif

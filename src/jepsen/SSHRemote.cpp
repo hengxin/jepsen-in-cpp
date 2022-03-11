@@ -15,7 +15,7 @@ void SSHRemote::connect(ConnSpec conn_spec) {}
 void SSHRemote::disconnect() {}
 
 int SSHRemote::execute(Context ctx, string cmd, string in) {
-    ssh_client.execute(cmd);
+    return ssh_client.execute(cmd);
 }
 
 void SSHRemote::upload(Context ctx, string local_path, string remote_path) {}

@@ -59,7 +59,7 @@ public:
         return *this;
     }
 
-    void execute(const string command);
+    bool execute(const string command);
     void getConnection();
     bool connectTo();
     bool disConnect();

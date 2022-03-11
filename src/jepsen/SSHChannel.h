@@ -20,7 +20,7 @@ public:
         }
     }
     ~SSHChannel() {
-        close(session);
+        // close(session);
     }
 
 

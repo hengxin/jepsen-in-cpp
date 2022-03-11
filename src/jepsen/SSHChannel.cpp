@@ -31,13 +31,17 @@ bool SSHChannel::close(LIBSSH2_SESSION* session) {
                                         NULL);
     }
 
-    if (exitsignal)
+    bool flag = true;
+    if (exitsignal) {
         fprintf(stderr, "\nGot signal: %s\n", exitsignal);
-    else
+        flag = false;
+    } else {
         fprintf(stderr, "\nEXIT: %d\n", exitcode);
+        flag = exitcode == 0;
+    }
 
     libssh2_channel_free(channel);
-    return true;
+    return flag;
 }
 
 bool SSHChannel::exec(const string command, LIBSSH2_SESSION* session) {
