@@ -39,6 +39,15 @@ target("test-runner")
     add_packages("log4cplus")
     add_packages("libssh2")
 
+target("test-worker")
+    set_kind("binary")
+    add_files("test/worker/*.cpp")
+    add_files("src/jepsen/*.cpp")
+    add_includedirs("src/jepsen")
+    add_packages("jsoncpp")
+    add_packages("log4cplus")
+    add_packages("libssh2")
+
 --- 2.2 Test Third Party
 ---- Test for libssh2
 target("test-libssh2--ssh2")

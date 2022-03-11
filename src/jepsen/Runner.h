@@ -2,13 +2,12 @@
 #define RUNNER_H
 
 #include "Checker.h"
-#include "Client.h"
 #include "Database.h"
 #include "Generator.h"
-#include "Nemesis.h"
 #include "OS.h"
 #include "Operation.h"
 #include "SSHRemote.h"
+#include "Worker.h"
 #include "include.h"
 
 struct SSHInfo {
@@ -42,14 +41,14 @@ public:
           logger(log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"))) {
         this->initLogger();
         this->initRemotes();
+        this->setClientAndNemesis();
     }
     void run();
     void initLogger();
     void initRemotes();
     void setOS(shared_ptr<OS>& os);
     void setDB(shared_ptr<DB>& db);
-    void setClient(shared_ptr<Client>& client);
-    void setNemesis(shared_ptr<Nemesis>& nemesis);
+    void setClientAndNemesis();
     void setGenerator(shared_ptr<Generator>& generator);
     void setChecker(shared_ptr<Checker>& checker);
 
@@ -59,13 +58,16 @@ private:
     SSHInfo ssh;
     shared_ptr<OS> os;
     shared_ptr<DB> db;
-    shared_ptr<Client> client;
-    shared_ptr<Nemesis> nemesis;
+
     shared_ptr<Generator> generator;
     shared_ptr<Checker> checker;
+
+    vector<shared_ptr<Worker>> workers;
     vector<Operation> history;
 
     // vector<SSHClient> ssh_clients;
+
+    // TODO: shared a shared_ptr<unordered_map> ?
     unordered_map<string, shared_ptr<SSHRemote>> remotes;
 
     log4cplus::Logger logger;

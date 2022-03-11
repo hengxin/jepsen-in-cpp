@@ -46,13 +46,16 @@ void Runner::setDB(shared_ptr<DB>& db) {
     this->db = db;
     this->db->initRemotes(remotes);
 }
-void Runner::setClient(shared_ptr<Client>& client) {
-    this->client = client;
+
+void Runner::setClientAndNemesis() {
+    workers.reserve(concurrency + 1);  // workers[0] is nemesis and others are clients
+    workers.emplace_back(std::make_shared<NemesisWorker>(0));
+    for (int i = 1; i <= concurrency; i++) {
+        auto node = nodes[(i - 1) % nodes.size()];
+        workers.emplace_back(std::make_shared<ClientWorker>(i, node));
+    }
 }
 
-void Runner::setNemesis(shared_ptr<Nemesis>& nemesis) {
-    this->nemesis = nemesis;
-}
 
 void Runner::setGenerator(shared_ptr<Generator>& generator) {
     this->generator = generator;
@@ -96,10 +99,14 @@ void Runner::run() {
     }
 
 
-    for (auto node : nodes) {
-        db->teardown(node);
+    if (!leave_db_running) {
+        for (auto node : nodes) {
+            db->teardown(node);
+        }
+        LOG4CPLUS_INFO(logger, "Runner finish teardown remote database");
+    } else {
+        LOG4CPLUS_INFO(logger, "Runner skip teardown remote database(leave db running)");
     }
-    LOG4CPLUS_INFO(logger, "Runner finish teardown remote database");
 
     for (auto node : nodes) {
         os->teardown(node);
