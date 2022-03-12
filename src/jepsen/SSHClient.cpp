@@ -177,6 +177,7 @@ bool SSHClient::execute(const string command) {
         getConnection();
     }
     SSHChannel channel(session, sock);
-    channel.exec(command, session);
+    string channel_data;
+    channel.exec(command, session, channel_data);
     return channel.close(session);
 }

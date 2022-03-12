@@ -8,7 +8,10 @@ using std::string;
 class SSHChannel {
 public:
     SSHChannel() = delete;
-    explicit SSHChannel(LIBSSH2_SESSION* session, int socket) : sock(socket), session(session) {
+    explicit SSHChannel(LIBSSH2_SESSION* session, int socket)
+        : sock(socket),
+          session(session),
+          logger(log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"))) {
         if (session == nullptr) {
             fprintf(stderr, "SSHChannel::SSHChannel: session is nullptr\n");
         }
@@ -27,12 +30,13 @@ public:
     LIBSSH2_CHANNEL* createChannel(LIBSSH2_SESSION* session);
     bool close(LIBSSH2_SESSION* session);
 
-    bool exec(const string command, LIBSSH2_SESSION* session);
+    bool exec(const string command, LIBSSH2_SESSION* session, string& channel_data);
 
 private:
     int sock;
     LIBSSH2_CHANNEL* channel;
     LIBSSH2_SESSION* session;
+    log4cplus::Logger logger;
 };
 
 

@@ -9,7 +9,7 @@ bool ControlHelper::install_archive(RemotePtr& remote, string url, string dir, b
     LOG4CPLUS_INFO(logger, dest_file.c_str());
 
     Context ctx(dir, "young", "guazi13110");
-    int res = remote->execute(ctx, "stat ~/nodes", "");
+    bool res = remote->execute(ctx, "stat ~/nodes", "");
     LOG4CPLUS_INFO(logger, res);
     return true;
 }

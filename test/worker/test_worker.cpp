@@ -8,7 +8,7 @@ const string a2 = "47.108.30.249";
 int main() {
     log4cplus::Initializer initializer;
     log4cplus::PropertyConfigurator::doConfigure(
-        LOG4CPLUS_TEXT("/home/young/github-projects/jepsen-in-cpp/src/log4cplus.config"));
+        LOG4CPLUS_TEXT("/home/young/github-projects/jepsen-in-cpp/src/log4cplus.cfg"));
 
     vector<string> nodes{a0, a1, a2};
 

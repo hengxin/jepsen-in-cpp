@@ -33,10 +33,10 @@ bool SSHChannel::close(LIBSSH2_SESSION* session) {
 
     bool flag = true;
     if (exitsignal) {
-        fprintf(stderr, "\nGot signal: %s\n", exitsignal);
+        LOG4CPLUS_DEBUG(logger, "Got signal: " << exitsignal);
         flag = false;
     } else {
-        fprintf(stderr, "\nEXIT: %d\n", exitcode);
+        LOG4CPLUS_DEBUG(logger, "EXIT: " << exitcode);
         flag = exitcode == 0;
     }
 
@@ -44,13 +44,13 @@ bool SSHChannel::close(LIBSSH2_SESSION* session) {
     return flag;
 }
 
-bool SSHChannel::exec(const string command, LIBSSH2_SESSION* session) {
+bool SSHChannel::exec(const string command, LIBSSH2_SESSION* session, string& channel_data) {
     int rc;
     while ((rc = libssh2_channel_exec(channel, command.c_str())) == LIBSSH2_ERROR_EAGAIN) {
         waitsocket(sock, session);
     }
     if (rc != 0) {
-        fprintf(stderr, "Error\n");
+        LOG4CPLUS_ERROR(logger, "Error in SSHChannel::exec, rc != 0 \n");
         exit(1);
     }
     for (;;) {
@@ -64,14 +64,14 @@ bool SSHChannel::exec(const string command, LIBSSH2_SESSION* session) {
             if (rc > 0) {
                 int i;
                 bytecount += rc;
-                fprintf(stderr, "We read:\n");
-                for (i = 0; i < rc; ++i)
-                    fputc(buffer[i], stderr);
-                fprintf(stderr, "\n");
+                string buf = string(buffer, buffer + rc);
+                channel_data += buf;
+                LOG4CPLUS_DEBUG(logger, "We read:");
+                LOG4CPLUS_DEBUG(logger, std::endl << buf.c_str());
             } else {
                 if (rc != LIBSSH2_ERROR_EAGAIN)
                     /* no need to output this for the EAGAIN case */
-                    fprintf(stderr, "libssh2_channel_read returned %d\n", rc);
+                    LOG4CPLUS_DEBUG(logger, "libssh2_channel_read returned " << rc);
             }
         } while (rc > 0);
 
