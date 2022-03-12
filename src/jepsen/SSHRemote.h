@@ -22,13 +22,22 @@ public:
     virtual void connect(ConnSpec conn_spec) override;
     virtual void disconnect() override;
     virtual int execute(Context ctx, string cmd, string in) override;
+    virtual int execute(
+        Context ctx, string cmd, string in, string& _stdout, string& _stderr) override;
     virtual void upload(Context ctx, string local_path, string remote_path) override;
     virtual void download(Context ctx, string remote_path, string local_path) override;
+
+    int execute(string cmd);
+    int execute(string cmd, string& channel_stdout, string& channel_stderr);
+    int sudoExecute(string cmd);
+    int sudoExecute(string cmd, string& channel_stdout, string& channel_stderr);
+    int cd(string path);
 
 private:
     int concurrency_limit;
     ConnSpec conn_spec;
     SSHClient ssh_client;
+    Context ctx;  // TODO: Useless now
     // Semaphore
     log4cplus::Logger logger;
 };

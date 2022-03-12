@@ -60,6 +60,7 @@ public:
     }
 
     bool execute(const string command);
+    bool execute(const string command, string& channel_stdout, string& channel_stderr);
     void getConnection();
     bool connectTo();
     bool disConnect();

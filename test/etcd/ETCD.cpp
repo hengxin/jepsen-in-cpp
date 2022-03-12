@@ -5,7 +5,7 @@ bool ETCD::setup(string node) {
     string url = "https://storage.googleapis.com/etcd/" + version + "/etcd-" + version +
         "-linux-amd64.tar.gz";
     auto remote = remotes[node];
-    ControlHelper::install_archive(remote, url, kDir, false);
+    ControlHelper::installArchive(remote, url, kDir);
     return true;
 }
 

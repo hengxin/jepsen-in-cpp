@@ -3,6 +3,7 @@ add_rules("mode.debug", "mode.release")
 add_requires("libssh2")
 add_requires("log4cplus")
 add_requires("jsoncpp")
+-- boost (in ubuntu, we use apt-get install but there may be some errors in windows)
 
 set_languages("cxx17")
 
@@ -50,9 +51,18 @@ target("test-worker")
     add_packages("log4cplus")
     add_packages("libssh2")
 
+target("test-remote")
+    set_kind("binary")
+    add_files("test/remote/*.cpp")
+    add_files("src/jepsen/*.cpp")
+    add_includedirs("src/jepsen")
+    add_packages("jsoncpp")
+    add_packages("log4cplus")
+    add_packages("libssh2")
+
 --- 2.2 Test Third Party
 ---- Test for libssh2
-target("test-libssh2--ssh2")
+target("test-libssh2-ssh2")
     set_kind("binary")
     add_files("test/libssh2/ssh2.cpp")
     add_packages("libssh2")

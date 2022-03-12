@@ -44,7 +44,10 @@ bool SSHChannel::close(LIBSSH2_SESSION* session) {
     return flag;
 }
 
-bool SSHChannel::exec(const string command, LIBSSH2_SESSION* session, string& channel_data) {
+bool SSHChannel::exec(const string command,
+                      LIBSSH2_SESSION* session,
+                      string& channel_stdout,
+                      string& channel_stderr) {
     int rc;
     while ((rc = libssh2_channel_exec(channel, command.c_str())) == LIBSSH2_ERROR_EAGAIN) {
         waitsocket(sock, session);
@@ -65,7 +68,7 @@ bool SSHChannel::exec(const string command, LIBSSH2_SESSION* session, string& ch
                 int i;
                 bytecount += rc;
                 string buf = string(buffer, buffer + rc);
-                channel_data += buf;
+                channel_stdout += buf;
                 LOG4CPLUS_DEBUG(logger, "We read:");
                 LOG4CPLUS_DEBUG(logger, std::endl << buf.c_str());
             } else {
@@ -82,5 +85,36 @@ bool SSHChannel::exec(const string command, LIBSSH2_SESSION* session, string& ch
         } else
             break;
     }
+
+    for (;;) {
+        /* loop until we block */
+        int rc;
+        int bytecount = 0;
+        do {
+            char buffer[0x4000];
+            rc = libssh2_channel_read_stderr(channel, buffer, sizeof(buffer));
+
+            if (rc > 0) {
+                int i;
+                bytecount += rc;
+                string buf = string(buffer, buffer + rc);
+                channel_stderr += buf;
+                LOG4CPLUS_DEBUG(logger, "We read stderr:");
+                LOG4CPLUS_DEBUG(logger, std::endl << buf.c_str());
+            } else {
+                if (rc != LIBSSH2_ERROR_EAGAIN)
+                    /* no need to output this for the EAGAIN case */
+                    LOG4CPLUS_DEBUG(logger, "libssh2_channel_read_stderr returned " << rc);
+            }
+        } while (rc > 0);
+
+        /* this is due to blocking that would occur otherwise so we loop on
+           this condition */
+        if (rc == LIBSSH2_ERROR_EAGAIN) {
+            waitsocket(sock, session);
+        } else
+            break;
+    }
+
     return true;
 }

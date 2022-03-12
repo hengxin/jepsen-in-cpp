@@ -2,10 +2,10 @@
 #include "ETCDClient.h"
 #include "Runner.h"
 
-// public-cd-a{0-2}.disalg.cn
-const string a0 = "47.108.158.63";
-const string a1 = "47.108.172.24";
-const string a2 = "47.108.30.249";
+// public-cd-b{0-2}.disalg.cn
+const string b0 = "47.108.193.81";
+const string b1 = "47.108.227.187";
+const string b2 = "47.108.208.93";
 
 int main() {
     log4cplus::Initializer initializer;
@@ -15,8 +15,8 @@ int main() {
     Client::Register<ETCDClient>();
     Nemesis::Register<NoopNemesis>();
 
-    vector<string> nodes{a0, a1, a2};
-    SSHInfo ssh("young", "", "", 22, "/home/young/.ssh/id_rsa", false);
+    vector<string> nodes{b0, b1, b2};
+    SSHInfo ssh("young", "guazi13110", "guazi13110", 22, "/home/young/.ssh/id_rsa", false);
     Runner runner(nodes, 5, ssh);
     // Initialize Operating System
     shared_ptr<OS> os = std::make_shared<Ubuntu>();

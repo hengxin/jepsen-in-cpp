@@ -28,6 +28,7 @@ struct Context {
     string dir;
     string sudo;
     string password;
+    Context() = default;
     Context(string dir, string sudo, string password) : dir(dir), sudo(sudo), password(password) {}
 };
 

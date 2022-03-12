@@ -30,7 +30,10 @@ public:
     LIBSSH2_CHANNEL* createChannel(LIBSSH2_SESSION* session);
     bool close(LIBSSH2_SESSION* session);
 
-    bool exec(const string command, LIBSSH2_SESSION* session, string& channel_data);
+    bool exec(const string command,
+              LIBSSH2_SESSION* session,
+              string& channel_stdout,
+              string& channel_stderr);
 
 private:
     int sock;

@@ -171,13 +171,18 @@ bool SSHClient::disConnect() {
 }
 
 bool SSHClient::execute(const string command) {
+    string t1;
+    string t2;
+    return execute(command, t1, t2);
+}
+
+bool SSHClient::execute(const string command, string& channel_stdout, string& channel_stderr) {
     LOG4CPLUS_DEBUG(logger, LOG4CPLUS_TEXT("--- Executing " << command.c_str()));
 
     if (session == nullptr || sock == kSocketInit) {
         getConnection();
     }
     SSHChannel channel(session, sock);
-    string channel_data;
-    channel.exec(command, session, channel_data);
+    channel.exec(command, session, channel_stdout, channel_stderr);
     return channel.close(session);
 }

@@ -27,6 +27,10 @@ void testMultiThreadSSH() {
 }
 
 int main(int argc, char** argv) {
+    log4cplus::Initializer initializer;
+    log4cplus::PropertyConfigurator::doConfigure(
+        LOG4CPLUS_TEXT("/home/young/github-projects/jepsen-in-cpp/src/log4cplus.cfg"));
+
     testMultiThreadSSH();
     return 0;
 }
