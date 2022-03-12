@@ -59,4 +59,62 @@ bool ControlHelper::installArchive(RemotePtr& remote, string url, string dest, b
     }
 
     remote->sudoExecute("rm -rf " + tmp_dir);
+    return true;
+}
+
+
+void ControlHelper::startDaemon(RemotePtr& remote,
+                                StartDaemonOptions& opts,
+                                string bin,
+                                string args) {
+    LOG4CPLUS_INFO(logger, "starting " << bin.c_str());
+
+    boost::filesystem::path pbin(bin);
+    auto bin_name = pbin.stem().string();
+    string echo = "echo `date +'%Y-%m-%d %H:%M:%S'`";
+    echo += " Jepsen starting";
+    if (opts.env.has_value()) {
+        echo += " " + opts.env.value();
+    }
+    echo += " " + bin_name + args + " >> " + opts.logfile.value();
+
+    remote->sudoExecute(echo);
+
+    string command;
+    if (opts.env.has_value()) {
+        command += opts.env.value();
+    }
+
+    command += " start-stop-daemon --start ";
+    if (!opts.background.has_value() || opts.background.value()) {
+        command += " --background --no-close ";
+    }
+    if (!opts.make_pidfile.has_value() || opts.make_pidfile.value()) {
+        command += " --make-pidfile";
+    }
+    if (!opts.match_executable.has_value() || opts.match_executable.value()) {
+        command += " --exec " + bin + " ";
+    }
+    if (opts.match_process_name.has_value() && opts.match_process_name.value()) {
+        if (opts.process_name.has_value()) {
+            command += " --name " + opts.process_name.value();
+        } else {
+            command += " --name " + bin_name;
+        }
+    }
+
+    command += " --pidfile " + opts.pidfile.value();
+    command += " --chdir " + opts.chdir.value();
+    command += " --oknodo ";
+    command += " --startas " + bin;
+    command += " -- " + args;
+    command += " >> " + opts.logfile.value() + " 2>&1";
+
+    remote->sudoExecute(command);
+}
+
+void ControlHelper::stopDaemon(RemotePtr& remote, string cmd, string pidfile) {
+    LOG4CPLUS_INFO(logger, "starting " << cmd.c_str());
+    remote->sudoExecute("killall -9 -w " + cmd);
+    remote->sudoExecute("rm -rf " + pidfile);
 }

@@ -76,7 +76,7 @@ void Runner::run() {
 
     LOG4CPLUS_INFO(logger, "Runner start teardown remote database");
     for (auto node : nodes) {
-        os->teardown(node);
+        db->teardown(node);
     }
 
     LOG4CPLUS_INFO(logger, "Runner start setup remote database");
@@ -95,7 +95,7 @@ void Runner::run() {
                 primary_db->setupPrimary(primary);
             }
         } else {
-            LOG4CPLUS_INFO(logger, "NO Primary");
+            LOG4CPLUS_INFO(logger, "No Primary");
         }
     }
 

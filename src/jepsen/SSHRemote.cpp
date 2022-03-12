@@ -31,15 +31,20 @@ int SSHRemote::execute(string cmd) {
 }
 
 int SSHRemote::sudoExecute(string cmd, string& channel_stdout, string& channel_stderr) {
-    boost::format fmt("echo %s | sudo -S %s");
+    /* method 1: echo $pwd | sudo -S cmd */
+    // boost::format fmt("echo %s | sudo -S %s");
+    // fmt % conn_spec.password % cmd;
+
+    /* method 2: echo $pwd | sudo bash -c "cmd" */
+    boost::format fmt("echo %s | sudo bash -c \"%s\"");
     fmt % conn_spec.password % cmd;
     return execute(fmt.str(), channel_stdout, channel_stderr);
 }
 
 int SSHRemote::sudoExecute(string cmd) {
-    boost::format fmt("echo %s | sudo -S %s");
-    fmt % conn_spec.password % cmd;
-    return execute(fmt.str());
+    string out;
+    string err;
+    return sudoExecute(cmd, out, err);
 }
 
 

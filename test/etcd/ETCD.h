@@ -5,6 +5,9 @@
 #include "Database.h"
 
 const string kDir = "/opt/etcd";
+const string kBinary = "etcd";
+const string kLogFile = kDir + "/etcd.log";
+const string kPidFile = kDir + "/etcd.pid";
 
 class ETCD : public DB, public DBPrimaryInterface {
 public:
@@ -14,6 +17,12 @@ public:
 
     virtual vector<string> getPrimaries() override;
     virtual bool setupPrimary(string node) override;
+
+protected:
+    string nodeURL(string node, int port);
+    string peerURL(string node);
+    string clientURL(string node);
+    string initialCluster();
 
 private:
     string version;

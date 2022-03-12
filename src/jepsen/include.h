@@ -2,6 +2,7 @@
 #define INCLUDE_H
 
 #include <iostream>
+#include <json/json.h>  // jsoncpp
 #include <log4cplus/configurator.h>
 #include <log4cplus/consoleappender.h>
 #include <log4cplus/helpers/loglog.h>
@@ -15,8 +16,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include <json/json.h>  // jsoncpp
 
 #include <boost/format.hpp>  // boost
 

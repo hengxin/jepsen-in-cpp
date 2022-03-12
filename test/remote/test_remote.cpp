@@ -18,7 +18,7 @@ int main() {
 
     string out;
     string err;
-    remote.execute("ls -A /tmp/jepsen/846930886", out, err);
+    remote.sudoExecute("mkdir -p /tmp/jepsen/cpp", out, err);
 
     vector<string> result;
     boost::split(result, out, boost::is_any_of("\n"));

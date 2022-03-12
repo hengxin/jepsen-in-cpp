@@ -34,11 +34,12 @@ struct SSHInfo {
 class Runner {
 public:
     Runner() = delete;
-    Runner(vector<string>& nodes, int concurrency, SSHInfo& ssh)
+    Runner(vector<string>& nodes, int concurrency, SSHInfo& ssh, bool leave_db_running = false)
         : nodes(nodes),
           concurrency(concurrency),
           ssh(ssh),
-          logger(log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"))) {
+          logger(log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"))),
+          leave_db_running(leave_db_running) {
         this->initLogger();
         this->initRemotes();
         this->setClientAndNemesis();

@@ -17,7 +17,7 @@ int main() {
 
     vector<string> nodes{b0, b1, b2};
     SSHInfo ssh("young", "guazi13110", "guazi13110", 22, "/home/young/.ssh/id_rsa", false);
-    Runner runner(nodes, 5, ssh);
+    Runner runner(nodes, 5, ssh, true);
     // Initialize Operating System
     shared_ptr<OS> os = std::make_shared<Ubuntu>();
     runner.setOS(os);
