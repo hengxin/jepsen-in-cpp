@@ -22,7 +22,7 @@ protected:
     string nodeURL(string node, int port, bool local);
     string peerURL(string node, bool local);
     string clientURL(string node, bool local);
-    string initialCluster(string node);
+    string initialCluster();
 
 private:
     string version;
