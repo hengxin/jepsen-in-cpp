@@ -3,6 +3,8 @@
 
 #include "include.h"
 
+namespace jepsen {
+
 class Operation {
 public:
     using OPInfo = Json::Value;
@@ -34,6 +36,7 @@ private:
     OPInfo op;
     Status status;
 };
+}  // namespace jepsen
 
 
 #endif

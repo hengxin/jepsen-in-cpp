@@ -1,6 +1,6 @@
 #include "SSHChannel.h"
 
-
+namespace jepsen {
 LIBSSH2_CHANNEL* SSHChannel::createChannel(LIBSSH2_SESSION* session) {
     LIBSSH2_CHANNEL* temp;
     while ((temp = libssh2_channel_open_session(session)) == NULL &&
@@ -118,3 +118,4 @@ bool SSHChannel::exec(const string command,
 
     return true;
 }
+}  // namespace jepsen

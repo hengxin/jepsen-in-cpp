@@ -6,6 +6,7 @@
 #include "Operation.h"
 #include "include.h"
 
+namespace jepsen {
 class Worker {
 public:
     Worker() = delete;
@@ -47,6 +48,7 @@ public:
     virtual bool invoke(Operation& op) override;
     virtual bool close() override;
 };
+}  // namespace jepsen
 
 
 #endif

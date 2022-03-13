@@ -4,6 +4,7 @@
 #include "Remote.h"
 #include "SSHClient.h"
 
+namespace jepsen {
 
 class SSHRemote : public Remote {
 public:
@@ -42,5 +43,6 @@ private:
     log4cplus::Logger logger;
 };
 
+}  // namespace jepsen
 
 #endif

@@ -1,5 +1,7 @@
 #include "Control.h"
 
+namespace jepsen {
+
 log4cplus::Logger ControlHelper::logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"));
 
 string ControlHelper::tmpDir(RemotePtr& remote) {
@@ -118,3 +120,4 @@ void ControlHelper::stopDaemon(RemotePtr& remote, string cmd, string pidfile) {
     remote->sudoExecute("killall -9 -w " + cmd);
     remote->sudoExecute("rm -rf " + pidfile);
 }
+}  // namespace jepsen

@@ -4,6 +4,9 @@
 #include "Client.h"
 #include <etcd/Client.hpp>
 
+using jepsen::Client;
+using jepsen::Operation;
+
 class ETCDClient : public Client {
 public:
     ETCDClient() {

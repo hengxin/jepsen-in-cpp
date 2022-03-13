@@ -2,6 +2,8 @@
 #include "ETCDClient.h"
 #include "Runner.h"
 
+using namespace jepsen;
+
 // public-cd-b{0-2}.disalg.cn
 const string b0 = "47.108.193.81";
 const string b1 = "47.108.227.187";

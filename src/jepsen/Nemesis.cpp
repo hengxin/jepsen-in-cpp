@@ -1,5 +1,7 @@
 #include "Nemesis.h"
 
+namespace jepsen {
+
 NemesisCreator Nemesis::cur_nemesis_type = NemesisConstructorHelper<NoopNemesis>();
 
 bool Nemesis::open(string node) {
@@ -21,3 +23,4 @@ bool Nemesis::invoke(Operation& op) {
 bool Nemesis::teardown() {
     return true;
 }
+}  // namespace jepsen

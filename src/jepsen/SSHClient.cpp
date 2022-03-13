@@ -1,6 +1,7 @@
 #include "SSHClient.h"
 #include "SSHChannel.h"
 
+namespace jepsen {
 SSHClient::SSHClient(const SSHClient& sshClient) {
     LOG4CPLUS_DEBUG(logger, "SSHClient: Copy Constructor");
     SSHClient(sshClient.ip_addr, sshClient.username, sshClient.password, sshClient.port);
@@ -186,3 +187,4 @@ bool SSHClient::execute(const string command, string& channel_stdout, string& ch
     channel.exec(command, session, channel_stdout, channel_stderr);
     return channel.close(session);
 }
+}  // namespace jepsen

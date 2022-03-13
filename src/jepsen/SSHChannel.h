@@ -3,6 +3,7 @@
 
 #include "SSHConfig.h"
 
+namespace jepsen {
 using std::string;
 
 class SSHChannel {
@@ -42,5 +43,6 @@ private:
     log4cplus::Logger logger;
 };
 
+}  // namespace jepsen
 
 #endif

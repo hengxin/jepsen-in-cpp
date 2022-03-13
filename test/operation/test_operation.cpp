@@ -3,6 +3,7 @@
 
 using std::cout;
 using std::endl;
+using namespace jepsen;
 
 int main() {
     Operation::OPInfo info;

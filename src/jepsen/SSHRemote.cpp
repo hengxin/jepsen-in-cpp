@@ -1,5 +1,6 @@
 #include "SSHRemote.h"
 
+namespace jepsen {
 SSHRemote& SSHRemote::operator=(const SSHRemote& rhs) {
     if (this == &rhs) {
         return *this;
@@ -51,3 +52,4 @@ int SSHRemote::sudoExecute(string cmd) {
 void SSHRemote::upload(Context ctx, string local_path, string remote_path) {}
 
 void SSHRemote::download(Context ctx, string remote_path, string local_path) {}
+}  // namespace jepsen

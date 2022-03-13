@@ -4,6 +4,7 @@
 #include "SSHRemote.h"
 #include "include.h"
 
+namespace jepsen {
 class DB {
 public:
     DB(vector<string> nodes)
@@ -30,6 +31,7 @@ public:
     virtual vector<string> getPrimaries() = 0;
     virtual bool setupPrimary(string node) = 0;
 };
+}  // namespace jepsen
 
 
 #endif

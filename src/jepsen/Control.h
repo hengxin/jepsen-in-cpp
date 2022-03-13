@@ -6,6 +6,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/path.hpp>
 
+namespace jepsen {
 using RemotePtr = shared_ptr<SSHRemote>;
 using std::optional;
 
@@ -36,5 +37,6 @@ public:
 
     static log4cplus::Logger logger;
 };
+}  // namespace jepsen
 
 #endif

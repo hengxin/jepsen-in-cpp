@@ -3,6 +3,7 @@
 
 #include "include.h"
 
+namespace jepsen {
 struct ConnSpec {
     string host;
     int port;
@@ -31,5 +32,6 @@ struct Context {
     Context() = default;
     Context(string dir, string sudo, string password) : dir(dir), sudo(sudo), password(password) {}
 };
+}  // namespace jepsen
 
 #endif REMOTE_SPEC_H

@@ -1,5 +1,6 @@
 #include "Operation.h"
 
+namespace jepsen {
 Operation& Operation::operator=(const Operation& rhs) {
     if (this == &rhs) {
         return *this;
@@ -28,3 +29,4 @@ Operation::OPInfo& Operation::getOp(string key) {
 Operation::Status Operation::getStatus() {
     return this->status;
 }
+}  // namespace jepsen

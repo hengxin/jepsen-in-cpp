@@ -3,6 +3,7 @@
 
 #include "Client.h"
 
+namespace jepsen {
 // Refer to https://www.zhihu.com/question/419982799/answer/1461745869
 class Nemesis;
 using NemesisPtr = unique_ptr<Nemesis>;
@@ -58,6 +59,7 @@ public:
         return true;
     };
 };
+}  // namespace jepsen
 
 
 #endif

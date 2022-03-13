@@ -10,6 +10,7 @@
 #include "Worker.h"
 #include "include.h"
 
+namespace jepsen {
 struct SSHInfo {
     string username;
     string password;
@@ -74,5 +75,6 @@ private:
     log4cplus::Logger logger;
     bool leave_db_running;
 };
+}  // namespace jepsen
 
 #endif

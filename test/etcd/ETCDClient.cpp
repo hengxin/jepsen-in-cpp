@@ -37,6 +37,16 @@ bool ETCDClient::invoke(Operation& op) {
         } else {
             op.setStatus(Operation::kFailed);
         }
+    } else if (op.getType() == "cas") {
+        string key = op.getOp("key").asString();
+        string val = op.getOp("value").asString();
+        string old = op.getOp("old-value").asString();
+        etcd::Response response = client->modify_if(key, val, old).get();
+        if (response.is_ok()) {
+            op.setStatus(Operation::kSuccess);
+        } else {
+            op.setStatus(Operation::kFailed);
+        }
     }
 
     return true;

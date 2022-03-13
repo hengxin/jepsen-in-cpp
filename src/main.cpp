@@ -10,7 +10,7 @@ void remoteWorks(int tid) {
 
     printf("[Thread %d] Testing in c++ version of %l", tid, __cplusplus);
 
-    SSHClient client("47.108.158.63", "young", "", 22);
+    jepsen::SSHClient client("47.108.158.63", "young", "", 22);
 
     client.execute("uptime");
     client.execute("cat /proc/cpuinfo");

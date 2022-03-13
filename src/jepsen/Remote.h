@@ -4,6 +4,7 @@
 #include "RemoteSpec.h"
 #include "include.h"
 
+namespace jepsen {
 class Remote {
 public:
     virtual void connect(ConnSpec conn_spec) = 0;
@@ -14,5 +15,6 @@ public:
     virtual void upload(Context ctx, string local_path, string remote_path) = 0;
     virtual void download(Context ctx, string remote_path, string local_path) = 0;
 };
+}  // namespace jepsen
 
 #endif

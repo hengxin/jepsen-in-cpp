@@ -4,6 +4,7 @@
 #include "SSHRemote.h"
 #include "include.h"
 
+namespace jepsen {
 class OS {
 public:
     OS() : logger(log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"))) {}
@@ -22,5 +23,7 @@ public:
     virtual bool setup(string node) override;
     virtual bool teardown(string node) override;
 };
+
+}  // namespace jepsen
 
 #endif

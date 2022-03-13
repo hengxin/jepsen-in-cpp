@@ -4,6 +4,7 @@
 #include "RemoteSpec.h"
 #include "SSHConfig.h"
 
+namespace jepsen {
 using std::cerr;
 using std::endl;
 using std::lock_guard;
@@ -79,5 +80,6 @@ private:
 
     log4cplus::Logger logger;
 };
+}  // namespace jepsen
 
 #endif

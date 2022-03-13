@@ -6,6 +6,8 @@
 #include "SSHRemote.h"
 #include "include.h"
 
+namespace jepsen {
+
 // Refer to https://www.zhihu.com/question/419982799/answer/1461745869
 class Client;
 using ClientPtr = unique_ptr<Client>;
@@ -67,5 +69,8 @@ public:
         return true;
     };
 };
+
+}  // namespace jepsen
+
 
 #endif

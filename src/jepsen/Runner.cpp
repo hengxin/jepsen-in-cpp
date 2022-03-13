@@ -1,5 +1,6 @@
 #include "Runner.h"
 
+namespace jepsen {
 using namespace log4cplus;
 
 /***
@@ -115,3 +116,4 @@ void Runner::run() {
     LOG4CPLUS_INFO(logger, "Runner finish teardown remote operating system");
     LOG4CPLUS_INFO(logger, "Runner finish running");
 }
+}  // namespace jepsen

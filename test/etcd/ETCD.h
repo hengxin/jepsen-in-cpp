@@ -4,6 +4,10 @@
 #include "Control.h"
 #include "Database.h"
 
+using jepsen::ControlHelper;
+using jepsen::DB;
+using jepsen::DBPrimaryInterface;
+
 const string kDir = "/opt/etcd";
 const string kBinary = "etcd";
 const string kLogFile = kDir + "/etcd.log";
@@ -26,11 +30,9 @@ protected:
 
 private:
     string version;
-    unordered_map<string, string> ip_map{
-        {"47.108.193.81", "172.24.234.239"},
-        {"47.108.227.187", "172.24.234.240"},
-        {"47.108.208.93", "172.24.234.241"}
-    };
+    unordered_map<string, string> ip_map{{"47.108.193.81", "172.24.234.239"},
+                                         {"47.108.227.187", "172.24.234.240"},
+                                         {"47.108.208.93", "172.24.234.241"}};
 };
 
 #endif

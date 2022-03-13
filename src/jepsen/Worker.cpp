@@ -1,5 +1,7 @@
 #include "Worker.h"
 
+namespace jepsen {
+
 bool ClientWorker::open(int id) {
     return client->open(node);
 }
@@ -21,3 +23,4 @@ bool NemesisWorker::invoke(Operation& op) {
 bool NemesisWorker::close() {
     return true;
 }
+}  // namespace jepsen
