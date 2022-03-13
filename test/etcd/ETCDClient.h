@@ -13,6 +13,11 @@ public:
     virtual bool setup() override;
     virtual bool invoke(Operation op) override;
     virtual bool teardown() override;
+
+protected:
+    string nodeURL(string node, int port);
+    string peerURL(string node);
+    string clientURL(string node);
 };
 
 

@@ -19,10 +19,10 @@ public:
     virtual bool setupPrimary(string node) override;
 
 protected:
-    string nodeURL(string node, int port);
-    string peerURL(string node);
-    string clientURL(string node);
-    string initialCluster();
+    string nodeURL(string node, int port, bool local);
+    string peerURL(string node, bool local);
+    string clientURL(string node, bool local);
+    string initialCluster(string node);
 
 private:
     string version;

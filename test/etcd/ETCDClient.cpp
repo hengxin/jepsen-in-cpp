@@ -19,3 +19,15 @@ bool ETCDClient::invoke(Operation op) {
 bool ETCDClient::teardown() {
     return true;
 }
+
+string ETCDClient::nodeURL(string node, int port) {
+    return "http://" + node + ":" + std::to_string(port);
+}
+
+string ETCDClient::peerURL(string node) {
+    return nodeURL(node, 2380);
+}
+
+string ETCDClient::clientURL(string node) {
+    return nodeURL(node, 2379);
+}

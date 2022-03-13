@@ -21,9 +21,9 @@ bool ETCD::setup(string node) {
     }
 
     string name = "n" + std::to_string(idx);
-    string peer_url = peerURL(node);
-    string client_url = clientURL(node);
-    string initial_cluster = initialCluster();
+    string peer_url = peerURL(node, true);
+    string client_url = clientURL(node, true);
+    string initial_cluster = initialCluster(node);
 
     string args_template =
         " --log-output stderr"
@@ -61,23 +61,27 @@ bool ETCD::setupPrimary(string node) {
     return true;
 }
 
-string ETCD::nodeURL(string node, int port) {
-    return "http://" + node + ":" + std::to_string(port);
+string ETCD::nodeURL(string node, int port, bool local = false) {
+    if (local) {
+        return "http://127.0.0.1:" + std::to_string(port);
+    } else {
+        return "http://" + node + ":" + std::to_string(port);
+    }
 }
 
-string ETCD::peerURL(string node) {
-    return nodeURL(node, 2380);
+string ETCD::peerURL(string node, bool local = false) {
+    return nodeURL(node, 2380, local);
 }
 
-string ETCD::clientURL(string node) {
-    return nodeURL(node, 2379);
+string ETCD::clientURL(string node, bool local = false) {
+    return nodeURL(node, 2379, local);
 }
 
-string ETCD::initialCluster() {
+string ETCD::initialCluster(string node) {
     int n = nodes.size();
-    string initial_cluster = "n0=" + peerURL(nodes[0]);
+    string initial_cluster = "n0=" + peerURL(nodes[0], nodes[0] == node);
     for (int i = 1; i < n; i++) {
-        initial_cluster += ",n" + std::to_string(i) + "=" + peerURL(nodes[i]);
+        initial_cluster += ",n" + std::to_string(i) + "=" + peerURL(nodes[i], nodes[i] == node);
     }
     return initial_cluster;
 }
