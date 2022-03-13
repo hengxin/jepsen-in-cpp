@@ -86,7 +86,7 @@ bool ETCD::setupPrimary(string node) {
 }
 
 string ETCD::nodeURL(string node, int port, bool local = false) {
-    string base = "http://" + node + ":" + std::to_string(port);
+    string base = "http://" + ip_map[node] + ":" + std::to_string(port);
     if (local) {
         return "http://127.0.0.1:" + std::to_string(port) + "," + base;
     } else {
