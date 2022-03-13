@@ -25,7 +25,7 @@ public:
     virtual bool open(string node) = 0;
     virtual bool close() = 0;
     virtual bool setup() = 0;
-    virtual bool invoke(Operation op) = 0;
+    virtual bool invoke(Operation& op) = 0;
     virtual bool teardown() = 0;
 
     template <class T>
@@ -60,7 +60,7 @@ public:
     virtual bool setup() override {
         return true;
     };
-    virtual bool invoke(Operation op) override {
+    virtual bool invoke(Operation& op) override {
         return true;
     };
     virtual bool teardown() override {

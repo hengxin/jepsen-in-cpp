@@ -14,7 +14,7 @@ bool Nemesis::setup() {
     return true;
 }
 
-bool Nemesis::invoke(Operation op) {
+bool Nemesis::invoke(Operation& op) {
     return true;
 }
 

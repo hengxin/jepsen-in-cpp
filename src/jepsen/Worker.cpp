@@ -1,14 +1,14 @@
 #include "Worker.h"
 
 bool ClientWorker::open(int id) {
-    return true;
+    return client->open(node);
 }
 bool ClientWorker::invoke(Operation& op) {
-    return true;
+    return client->invoke(op);
 }
 
 bool ClientWorker::close() {
-    return true;
+    return client->close();
 }
 
 bool NemesisWorker::open(int id) {

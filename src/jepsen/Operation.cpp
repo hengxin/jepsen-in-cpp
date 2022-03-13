@@ -20,6 +20,11 @@ Operation::OPInfo& Operation::getOp() {
     return this->op;
 }
 
+Operation::OPInfo& Operation::getOp(string key) {
+    return this->op[key];
+}
+
+
 Operation::Status Operation::getStatus() {
     return this->status;
 }
