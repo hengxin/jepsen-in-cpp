@@ -1,6 +1,8 @@
 #ifndef INCLUDE_H
 #define INCLUDE_H
 
+#include <algorithm>
+#include <execution>
 #include <iostream>
 #include <json/json.h>  // jsoncpp
 #include <log4cplus/configurator.h>
@@ -11,9 +13,11 @@
 #include <log4cplus/layout.h>
 #include <log4cplus/logger.h>  // log4cplus
 #include <log4cplus/loggingmacros.h>
+#include <log4cplus/ndc.h>
 #include <memory>
 #include <regex>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 

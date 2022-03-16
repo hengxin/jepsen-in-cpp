@@ -178,7 +178,7 @@ bool SSHClient::execute(const string command) {
 }
 
 bool SSHClient::execute(const string command, string& channel_stdout, string& channel_stderr) {
-    LOG4CPLUS_DEBUG(logger, LOG4CPLUS_TEXT("--- Executing " << command.c_str()));
+    LOG4CPLUS_DEBUG(logger, LOG4CPLUS_TEXT("Executing " << command.c_str()));
 
     if (session == nullptr || sock == kSocketInit) {
         getConnection();

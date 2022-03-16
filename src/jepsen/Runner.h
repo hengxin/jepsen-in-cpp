@@ -54,6 +54,16 @@ public:
     void setGenerator(shared_ptr<Generator>& generator);
     void setChecker(shared_ptr<Checker>& checker);
 
+    // OS
+    void setupOS();
+    void teardownOS();
+    // DB
+    void setupDB();
+    void teardownDB();
+
+    // Parallel
+    void withLoggerNDC(string node, std::function<void()> f);
+
 private:
     vector<string> nodes;
     int concurrency;
@@ -73,6 +83,7 @@ private:
     unordered_map<string, shared_ptr<SSHRemote>> remotes;
 
     log4cplus::Logger logger;
+
     bool leave_db_running;
 };
 }  // namespace jepsen

@@ -36,7 +36,9 @@ bool SSHChannel::close(LIBSSH2_SESSION* session) {
         LOG4CPLUS_DEBUG(logger, "Got signal: " << exitsignal);
         flag = false;
     } else {
-        LOG4CPLUS_DEBUG(logger, "EXIT: " << exitcode);
+        if (exitcode != 0) {
+            LOG4CPLUS_DEBUG(logger, "EXIT: " << exitcode);
+        }
         flag = exitcode == 0;
     }
 
@@ -69,12 +71,13 @@ bool SSHChannel::exec(const string command,
                 bytecount += rc;
                 string buf = string(buffer, buffer + rc);
                 channel_stdout += buf;
-                LOG4CPLUS_DEBUG(logger, "We read:");
-                LOG4CPLUS_DEBUG(logger, std::endl << buf.c_str());
+                LOG4CPLUS_DEBUG(logger, "STDOUT:" << std::endl << buf.c_str());
             } else {
                 if (rc != LIBSSH2_ERROR_EAGAIN)
                     /* no need to output this for the EAGAIN case */
-                    LOG4CPLUS_DEBUG(logger, "libssh2_channel_read returned " << rc);
+                    if (rc != 0) {
+                        LOG4CPLUS_DEBUG(logger, "libssh2_channel_read returned " << rc);
+                    }
             }
         } while (rc > 0);
 
@@ -99,12 +102,14 @@ bool SSHChannel::exec(const string command,
                 bytecount += rc;
                 string buf = string(buffer, buffer + rc);
                 channel_stderr += buf;
-                LOG4CPLUS_DEBUG(logger, "We read stderr:");
-                LOG4CPLUS_DEBUG(logger, std::endl << buf.c_str());
+                LOG4CPLUS_DEBUG(logger, "STDERR:" << std::endl << buf.c_str());
             } else {
-                if (rc != LIBSSH2_ERROR_EAGAIN)
+                if (rc != LIBSSH2_ERROR_EAGAIN) {
                     /* no need to output this for the EAGAIN case */
-                    LOG4CPLUS_DEBUG(logger, "libssh2_channel_read_stderr returned " << rc);
+                    if (rc != 0) {
+                        LOG4CPLUS_DEBUG(logger, "libssh2_channel_read_stderr returned " << rc);
+                    }
+                }
             }
         } while (rc > 0);
 

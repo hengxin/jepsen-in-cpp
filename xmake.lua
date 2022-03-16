@@ -23,6 +23,8 @@ target("control")
     if is_plat("linux") then
         add_syslinks("pthread")
     end    
+    add_syslinks("tbb")
+
 
 -- 2. Test
 --- 2.1 Test source
@@ -34,6 +36,7 @@ target("test-operation")
     add_includedirs("src/jepsen")
     add_packages("jsoncpp")
     add_packages("log4cplus")
+    add_syslinks("tbb")
 
 target("test-runner")
     set_kind("binary")
@@ -56,6 +59,7 @@ target("test-runner")
     add_syslinks("cpprest")
     add_syslinks("ssl")
     add_syslinks("crypto")
+    add_syslinks("tbb")
     
 target("test-worker")
     set_kind("binary")
@@ -78,6 +82,7 @@ target("test-worker")
     add_syslinks("cpprest")
     add_syslinks("ssl")
     add_syslinks("crypto")
+    add_syslinks("tbb")
 
 target("test-remote")
     set_kind("binary")
@@ -90,6 +95,7 @@ target("test-remote")
     add_packages("boost")
     add_syslinks("boost_filesystem")
     add_syslinks("boost_system")
+    add_syslinks("tbb")
     
 --- 2.2 Test Third Party
 ---- Test for libssh2
@@ -107,6 +113,11 @@ target("test-libssh2-ssh2-exec")
 target("test-log4cplus")
     set_kind("binary")
     add_files("test/log4cplus/hello-world.cpp")
+    add_packages("log4cplus")
+
+target("test-log4cplus-file")
+    set_kind("binary")
+    add_files("test/log4cplus/file.cpp")
     add_packages("log4cplus")
 
 ---- Test for jsoncpp

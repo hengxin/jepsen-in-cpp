@@ -16,7 +16,8 @@ void SSHRemote::connect(ConnSpec conn_spec) {}
 void SSHRemote::disconnect() {}
 
 int SSHRemote::execute(Context ctx, string cmd, string in) {
-    return ssh_client.execute(cmd);
+    string out, err;
+    return ssh_client.execute(cmd, out, err);
 }
 
 int SSHRemote::execute(Context ctx, string cmd, string in, string& _stdout, string& _stderr) {

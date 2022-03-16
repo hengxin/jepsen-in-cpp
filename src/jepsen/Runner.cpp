@@ -66,32 +66,48 @@ void Runner::setChecker(shared_ptr<Checker>& checker) {
     this->checker = checker;
 }
 
+void Runner::withLoggerNDC(string node, std::function<void()> f) {
+    log4cplus::NDC& ndc = log4cplus::getNDC();
+    log4cplus::tstring name(node.begin(), node.end());
+    log4cplus::NDCContextCreator _first_ndc(name);
+    f();
+    ndc.remove();
+}
 
-void Runner::run() {
-    LOG4CPLUS_INFO(logger, "Runner start running");
-
-    LOG4CPLUS_INFO(logger, "Runner start setup remote operating system");
-    for (auto node : nodes) {
-        os->setup(node);
+void Runner::setupOS() {
+    LOG4CPLUS_INFO(logger, "Start setup remote operating system");
+    {
+        std::for_each(std::execution::par, nodes.begin(), nodes.end(), [this](auto node) {
+            withLoggerNDC(node, [this, &node] { os->setup(node); });
+        });
     }
+    LOG4CPLUS_INFO(logger, "Finish setup remote operating system");
+}
 
-    LOG4CPLUS_INFO(logger, "Runner start teardown remote database");
-    for (auto node : nodes) {
-        db->teardown(node);
+void Runner::teardownOS() {
+    LOG4CPLUS_INFO(logger, "Start teardown remote operating system");
+    {
+        std::for_each(std::execution::par, nodes.begin(), nodes.end(), [this](auto node) {
+            withLoggerNDC(node, [this, &node] { os->teardown(node); });
+        });
     }
-
-    LOG4CPLUS_INFO(logger, "Runner start setup remote database");
-    for (auto node : nodes) {
-        db->setup(node);
+    LOG4CPLUS_INFO(logger, "Finish teardown remote operating system");
+}
+// DB
+void Runner::setupDB() {
+    LOG4CPLUS_INFO(logger, "Start setup remote database");
+    {
+        std::for_each(std::execution::par, nodes.begin(), nodes.end(), [this](auto node) {
+            withLoggerNDC(node, [this, &node] { db->setup(node); });
+        });
     }
-
-
     // Setup Primary if it exists
     {
         DBPrimaryInterface* primary_db;
         if ((primary_db = dynamic_cast<DBPrimaryInterface*>(db.get())) != nullptr) {
             LOG4CPLUS_INFO(logger, "Runner set up primaries of databases");
             auto primaries = primary_db->getPrimaries();
+
             for (auto primary : primaries) {
                 primary_db->setupPrimary(primary);
             }
@@ -99,21 +115,34 @@ void Runner::run() {
             LOG4CPLUS_INFO(logger, "No Primary");
         }
     }
+    LOG4CPLUS_INFO(logger, "Finish setup remote database");
+}
 
+void Runner::teardownDB() {
+    LOG4CPLUS_INFO(logger, "Start teardown remote database");
+    {
+        std::for_each(std::execution::par, nodes.begin(), nodes.end(), [this](auto node) {
+            withLoggerNDC(node, [this, &node] { db->teardown(node); });
+        });
+    }
+    LOG4CPLUS_INFO(logger, "Finish teardown remote database");
+}
+
+void Runner::run() {
+    LOG4CPLUS_INFO(logger, "Jepsen-Runner start running");
+
+    setupOS();
+    teardownDB();
+    setupDB();
 
     if (!leave_db_running) {
-        for (auto node : nodes) {
-            db->teardown(node);
-        }
-        LOG4CPLUS_INFO(logger, "Runner finish teardown remote database");
+        teardownDB();
     } else {
-        LOG4CPLUS_INFO(logger, "Runner skip teardown remote database(leave db running)");
+        LOG4CPLUS_INFO(logger, "Skip teardown remote database(leave db running)");
     }
 
-    for (auto node : nodes) {
-        os->teardown(node);
-    }
-    LOG4CPLUS_INFO(logger, "Runner finish teardown remote operating system");
-    LOG4CPLUS_INFO(logger, "Runner finish running");
+    teardownOS();
+    LOG4CPLUS_INFO(logger, "Jepsen-Runner finish running");
 }
+
 }  // namespace jepsen
