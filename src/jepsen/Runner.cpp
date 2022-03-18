@@ -128,6 +128,37 @@ void Runner::teardownDB() {
     LOG4CPLUS_INFO(logger, "Finish teardown remote database");
 }
 
+void Runner::setupClientNemesis() {
+    nf = std::async(&Nemesis::setup, std::move(Nemesis::createOne()));  // nemesis future
+
+    for (int i = 0; i < nodes.size(); i++) {
+        clients.emplace_back(Client::createOne());
+        indexs.push_back(i);
+    }
+    std::for_each(std::execution::par, indexs.begin(), indexs.end(), [this](auto i) {
+        auto& client = clients[i];
+        auto& node = nodes[i];
+        withLoggerNDC(node, [&node, &client] {
+            client->open(node);
+            client->setup();
+        });
+    });
+    nf.get();
+}
+
+void Runner::teardownClientNemesis() {
+    nf = std::async(&Nemesis::teardown, std::move(Nemesis::createOne()));
+    std::for_each(std::execution::par, indexs.begin(), indexs.end(), [this](auto i) {
+        auto& client = clients[i];
+        auto& node = nodes[i];
+        withLoggerNDC(node, [&node, &client] {
+            client->teardown();
+            client->close();
+        });
+    });
+    nf.get();
+}
+
 void Runner::run() {
     LOG4CPLUS_INFO(logger, "Jepsen-Runner start running");
 
@@ -135,6 +166,11 @@ void Runner::run() {
     teardownDB();
     setupDB();
 
+    auto relative_time = std::chrono::system_clock::now();
+    setupClientNemesis();
+
+
+    teardownClientNemesis();
     if (!leave_db_running) {
         teardownDB();
     } else {

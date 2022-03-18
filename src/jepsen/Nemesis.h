@@ -50,12 +50,14 @@ public:
         return true;
     };
     virtual bool setup() override {
+        LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("NoopNemesis setup"));
         return true;
     };
     virtual bool invoke(Operation& op) override {
         return true;
     };
     virtual bool teardown() override {
+        LOG4CPLUS_INFO(logger, LOG4CPLUS_TEXT("NoopNemesis teardown"));
         return true;
     };
 };

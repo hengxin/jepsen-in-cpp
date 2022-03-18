@@ -57,15 +57,19 @@ public:
         LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__);
     };
     virtual bool open(string node) override {
+        LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__);
         return true;
     };
     virtual bool close() override {
+        LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__);
         return true;
     };
     virtual bool setup() override {
+        LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__);
         return true;
     };
     virtual bool invoke(Operation& op) override {
+        LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__);
         return true;
     };
     virtual bool teardown() override {

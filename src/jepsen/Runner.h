@@ -8,9 +8,10 @@
 #include "Operation.h"
 #include "SSHRemote.h"
 #include "Worker.h"
-
 #include "include/log4cplus.h"
+#include <chrono>
 #include <execution>
+#include <future>
 
 namespace jepsen {
 struct SSHInfo {
@@ -62,6 +63,9 @@ public:
     // DB
     void setupDB();
     void teardownDB();
+    // Client or Nemesis
+    void setupClientNemesis();
+    void teardownClientNemesis();
 
     // Parallel
     void withLoggerNDC(string node, std::function<void()> f);
@@ -81,8 +85,10 @@ private:
 
     // TODO: shared a shared_ptr<unordered_map> ?
     std::unordered_map<string, SSHRemotePtr> remotes;
-
     //
+    std::future<bool> nf;
+    std::vector<ClientPtr> clients;
+    std::vector<int> indexs;
 
 
     log4cplus::Logger logger;

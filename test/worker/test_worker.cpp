@@ -1,5 +1,6 @@
 #include "ETCDClient.h"
 #include "Worker.h"
+#include <future>
 
 using namespace jepsen;
 using std::vector;
@@ -9,10 +10,7 @@ const string b0 = "47.108.193.81";
 const string b1 = "47.108.227.187";
 const string b2 = "47.108.208.93";
 
-int main() {
-    log4cplus::Initializer initializer;
-    log4cplus::PropertyConfigurator::doConfigure(
-        LOG4CPLUS_TEXT("/home/young/github-projects/jepsen-in-cpp/src/log4cplus.cfg"));
+void testETCDWorker() {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"));
 
     vector<string> nodes{b0, b1, b2};
@@ -48,6 +46,23 @@ int main() {
         string val = r1.getOp("value").asString();
         LOG4CPLUS_INFO(logger, "read from key " << key.c_str() << " with value " << val.c_str());
     }
+}
+
+void testNemesisFuture() {
+    std::future<bool> nf;
+    nf = std::async(&Nemesis::setup, std::move(Nemesis::createOne()));  // nemesis future
+    nf.get();
+
+    nf = std::async(&Nemesis::teardown, std::move(Nemesis::createOne()));
+    nf.get();
+}
+
+int main() {
+    log4cplus::Initializer initializer;
+    log4cplus::PropertyConfigurator::doConfigure(
+        LOG4CPLUS_TEXT("/home/young/github-projects/jepsen-in-cpp/src/log4cplus.cfg"));
+
+    testNemesisFuture();
 
     return 0;
 }
