@@ -1,7 +1,7 @@
 #include "OS.h"
 
 namespace jepsen {
-void OS::initRemotes(unordered_map<string, shared_ptr<SSHRemote>>& remotes) {
+void OS::initRemotes(std::unordered_map<string, SSHRemotePtr>& remotes) {
     this->remotes = remotes;  // TODO: Deep copy?
 }
 

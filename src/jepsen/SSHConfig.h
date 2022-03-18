@@ -9,20 +9,12 @@
 #define HAVE_SYS_TIME_H
 #define HAVE_STDLIB_H
 
+#include "include/log4cplus.h"
 #include <iostream>
 #include <libssh2.h>
 #include <memory>
 #include <mutex>
 #include <string>
-
-#include <log4cplus/configurator.h>
-#include <log4cplus/consoleappender.h>
-#include <log4cplus/helpers/loglog.h>
-#include <log4cplus/helpers/property.h>
-#include <log4cplus/initializer.h>
-#include <log4cplus/layout.h>
-#include <log4cplus/logger.h>  // log4cplus
-#include <log4cplus/loggingmacros.h>
 
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h>

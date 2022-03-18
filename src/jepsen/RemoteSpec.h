@@ -1,7 +1,7 @@
 #ifndef REMOTE_SPEC_H
 #define REMOTE_SPEC_H
-
-#include "include.h"
+#include <string>
+using std::string;
 
 namespace jepsen {
 struct ConnSpec {

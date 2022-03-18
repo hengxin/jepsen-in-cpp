@@ -2,7 +2,7 @@
 
 bool ETCDClient::open(string node) {
     string url = clientURL(node);
-    client = shared_ptr<etcd::Client>(new etcd::Client(url));
+    client = std::shared_ptr<etcd::Client>(new etcd::Client(url));
     return true;
 }
 

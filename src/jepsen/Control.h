@@ -3,11 +3,14 @@
 
 #include "SSHRemote.h"
 #include "base64.h"
+#include "include/log4cplus.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/path.hpp>
+#include <regex>
+#include <vector>
 
 namespace jepsen {
-using RemotePtr = shared_ptr<SSHRemote>;
+using RemotePtr = SSHRemotePtr;
 using std::optional;
 
 const string kTempDir = "/tmp/jepsen";

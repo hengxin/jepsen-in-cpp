@@ -3,6 +3,7 @@
 #include "Runner.h"
 
 using namespace jepsen;
+using std::vector;
 
 // public-cd-b{0-2}.disalg.cn
 const string b0 = "47.108.193.81";
@@ -21,10 +22,10 @@ int main() {
     SSHInfo ssh("young", "guazi13110", "guazi13110", 22, "/home/young/.ssh/id_rsa", false);
     Runner runner(nodes, 5, ssh, true);
     // Initialize Operating System
-    shared_ptr<OS> os = std::make_shared<Ubuntu>();
+    OSPtr os = std::make_shared<Ubuntu>();
     runner.setOS(os);
     // Initialize Database
-    shared_ptr<DB> db = std::make_shared<ETCD>(ETCD(nodes));
+    DBPtr db = std::make_shared<ETCD>(ETCD(nodes));
     runner.setDB(db);
     // Initialize Client
     runner.run();

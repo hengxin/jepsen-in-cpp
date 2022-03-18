@@ -1,4 +1,5 @@
-#include "include.h"
+
+#include <json/json.h>  // jsoncpp
 
 namespace jepsen {
 class Config {

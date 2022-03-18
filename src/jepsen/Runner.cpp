@@ -32,18 +32,18 @@ void Runner::initRemotes() {
                            ssh.password,
                            ssh.private_key_path,
                            ssh.strict_host_key_checking);
-        remotes.emplace(ip_addr, shared_ptr<SSHRemote>(new SSHRemote(10, conn_spec)));
+        remotes.emplace(ip_addr, SSHRemotePtr(new SSHRemote(10, conn_spec)));
     }
     LOG4CPLUS_INFO(logger, "End Initialize Remotes");
 }
 
-void Runner::setOS(shared_ptr<OS>& os) {
+void Runner::setOS(OSPtr& os) {
     LOG4CPLUS_INFO(logger, "Set Operating System");
     this->os = os;
     this->os->initRemotes(remotes);
 }
 
-void Runner::setDB(shared_ptr<DB>& db) {
+void Runner::setDB(DBPtr& db) {
     this->db = db;
     this->db->initRemotes(remotes);
 }

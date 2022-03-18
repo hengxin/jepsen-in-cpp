@@ -76,7 +76,7 @@ bool ETCD::teardown(string node) {
     return true;
 }
 
-vector<string> ETCD::getPrimaries() {
+std::vector<string> ETCD::getPrimaries() {
     return {nodes[0]};
 }
 

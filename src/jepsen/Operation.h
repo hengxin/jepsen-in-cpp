@@ -1,7 +1,9 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-#include "include.h"
+#include <json/json.h>  // jsoncpp
+#include <string>
+using std::string;
 
 namespace jepsen {
 

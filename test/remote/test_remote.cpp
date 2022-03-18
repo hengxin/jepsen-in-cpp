@@ -2,6 +2,7 @@
 #include <boost/algorithm/string.hpp>
 
 using namespace jepsen;
+using std::vector;
 
 // public-cd-b{0-2}.disalg.cn
 const string b0 = "47.108.193.81";

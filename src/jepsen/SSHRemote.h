@@ -3,8 +3,13 @@
 
 #include "Remote.h"
 #include "SSHClient.h"
+#include "include/log4cplus.h"
+#include <boost/format.hpp>  // boost
+#include <memory>
 
 namespace jepsen {
+class SSHRemote;
+using SSHRemotePtr = std::shared_ptr<SSHRemote>;
 
 class SSHRemote : public Remote {
 public:

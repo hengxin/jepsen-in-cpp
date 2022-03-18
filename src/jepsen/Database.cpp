@@ -1,7 +1,7 @@
 #include "Database.h"
 
 namespace jepsen {
-void DB::initRemotes(unordered_map<string, shared_ptr<SSHRemote>>& remotes) {
+void DB::initRemotes(std::unordered_map<string, SSHRemotePtr>& remotes) {
     this->remotes = remotes;  // TODO: Deep copy?
 }
 }  // namespace jepsen

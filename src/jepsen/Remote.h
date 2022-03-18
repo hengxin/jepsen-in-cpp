@@ -2,7 +2,7 @@
 #define REMOTE_H
 
 #include "RemoteSpec.h"
-#include "include.h"
+
 
 namespace jepsen {
 class Remote {

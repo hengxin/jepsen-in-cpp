@@ -8,7 +8,9 @@
 #include "Operation.h"
 #include "SSHRemote.h"
 #include "Worker.h"
-#include "include.h"
+
+#include "include/log4cplus.h"
+#include <execution>
 
 namespace jepsen {
 struct SSHInfo {
@@ -35,7 +37,7 @@ struct SSHInfo {
 class Runner {
 public:
     Runner() = delete;
-    Runner(vector<string>& nodes, int concurrency, SSHInfo& ssh, bool leave_db_running = false)
+    Runner(std::vector<string>& nodes, int concurrency, SSHInfo& ssh, bool leave_db_running = false)
         : nodes(nodes),
           concurrency(concurrency),
           ssh(ssh),
@@ -48,8 +50,8 @@ public:
     void run();
     void initLogger();
     void initRemotes();
-    void setOS(shared_ptr<OS>& os);
-    void setDB(shared_ptr<DB>& db);
+    void setOS(OSPtr& os);
+    void setDB(DBPtr& db);
     void setClientAndNemesis();
     void setGenerator(shared_ptr<Generator>& generator);
     void setChecker(shared_ptr<Checker>& checker);
@@ -65,22 +67,23 @@ public:
     void withLoggerNDC(string node, std::function<void()> f);
 
 private:
-    vector<string> nodes;
+    std::vector<string> nodes;
     int concurrency;
     SSHInfo ssh;
-    shared_ptr<OS> os;
-    shared_ptr<DB> db;
+    OSPtr os;
+    DBPtr db;
 
     shared_ptr<Generator> generator;
     shared_ptr<Checker> checker;
 
-    vector<shared_ptr<Worker>> workers;
-    vector<Operation> history;
-
-    // vector<SSHClient> ssh_clients;
+    std::vector<shared_ptr<Worker>> workers;
+    std::vector<Operation> history;
 
     // TODO: shared a shared_ptr<unordered_map> ?
-    unordered_map<string, shared_ptr<SSHRemote>> remotes;
+    std::unordered_map<string, SSHRemotePtr> remotes;
+
+    //
+
 
     log4cplus::Logger logger;
 

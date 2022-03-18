@@ -49,7 +49,7 @@ bool ControlHelper::installArchive(RemotePtr& remote, string url, string dest, b
     string out;
     string err;
     remote->execute("ls -A " + tmp_dir, out, err);
-    vector<string> result;
+    std::vector<string> result;
     boost::split(result, out, boost::is_any_of("\n"));
 
     LOG4CPLUS_ASSERT(logger, result.size() == 0);
