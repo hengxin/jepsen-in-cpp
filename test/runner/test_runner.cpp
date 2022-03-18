@@ -27,7 +27,18 @@ int main() {
     // Initialize Database
     DBPtr db = std::make_shared<ETCD>(ETCD(nodes));
     runner.setDB(db);
-    // Initialize Client
+    // Initialize Generator
+    std::vector<Operation> ops;
+
+    ops.push_back(OperationFactory::read("x"));
+    ops.push_back(OperationFactory::write("x", "1"));
+    ops.push_back(OperationFactory::read("x"));
+    ops.push_back(OperationFactory::write("x", "2"));
+    ops.push_back(OperationFactory::read("x"));
+
+    GeneratorPtr gen = std::make_shared<VectorGenerator>(ops);
+    runner.setGenerator(gen);
+
     runner.run();
 
     return 0;

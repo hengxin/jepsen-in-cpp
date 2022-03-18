@@ -56,7 +56,7 @@ public:
     void setOS(OSPtr& os);
     void setDB(DBPtr& db);
     void setClientAndNemesis();
-    void setGenerator(shared_ptr<Generator>& generator);
+    void setGenerator(GeneratorPtr& generator);
     void setChecker(shared_ptr<Checker>& checker);
 
     // OS
@@ -79,7 +79,7 @@ private:
     OSPtr os;
     DBPtr db;
 
-    shared_ptr<Generator> generator;
+    GeneratorPtr generator;
     shared_ptr<Checker> checker;
 
     std::vector<WorkerPtr> workers;

@@ -58,7 +58,7 @@ void Runner::setClientAndNemesis() {
 }
 
 
-void Runner::setGenerator(shared_ptr<Generator>& generator) {
+void Runner::setGenerator(GeneratorPtr& generator) {
     this->generator = generator;
 }
 

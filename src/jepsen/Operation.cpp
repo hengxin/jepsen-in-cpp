@@ -9,6 +9,7 @@ Operation& Operation::operator=(const Operation& rhs) {
     this->type = rhs.type;
     this->op = rhs.op;
     this->status = rhs.status;
+    this->process = rhs.process;
 
     return *this;
 }
