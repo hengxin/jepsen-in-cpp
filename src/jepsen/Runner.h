@@ -2,6 +2,7 @@
 #define RUNNER_H
 
 #include "Checker.h"
+#include "Context.h"
 #include "Database.h"
 #include "Generator.h"
 #include "OS.h"
@@ -14,6 +15,7 @@
 #include <future>
 
 namespace jepsen {
+
 struct SSHInfo {
     string username;
     string password;
@@ -80,7 +82,7 @@ private:
     shared_ptr<Generator> generator;
     shared_ptr<Checker> checker;
 
-    std::vector<shared_ptr<Worker>> workers;
+    std::vector<WorkerPtr> workers;
     std::vector<Operation> history;
 
     // TODO: shared a shared_ptr<unordered_map> ?

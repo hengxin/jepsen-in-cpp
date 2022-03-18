@@ -4,13 +4,17 @@
 #include "Client.h"
 #include "Nemesis.h"
 #include "Operation.h"
-
+#include <future>
+#include <memory>
 
 namespace jepsen {
+class Worker;
+using WorkerPtr = std::shared_ptr<Worker>;
+
 class Worker {
 public:
     Worker() = delete;
-    Worker(int id) : id(id) {}
+    Worker(int id) : id(id), in(std::make_shared<OperationQueue>(OperationQueue(1))) {}
     virtual bool open(int id) = 0;
     virtual bool invoke(Operation& op) = 0;
     virtual bool close() = 0;
@@ -20,8 +24,10 @@ public:
     }
 
 protected:
-    unique_ptr<Client> client;
     int id;
+    unique_ptr<Client> client;
+    OperationQueuePtr in;
+    std::future<Operation> fut;
 };
 
 class ClientWorker : public Worker {

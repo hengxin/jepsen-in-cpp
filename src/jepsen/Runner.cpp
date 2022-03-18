@@ -169,6 +169,14 @@ void Runner::run() {
     auto relative_time = std::chrono::system_clock::now();
     setupClientNemesis();
 
+    JepsenContext ctx(concurrency);
+    std::vector<int> worker_ids(concurrency + 1);
+    for (int i = 0; i <= concurrency; i++) {
+        worker_ids[i] = i;
+    }
+
+    OperationQueuePtr completions = std::make_shared<OperationQueue>(concurrency + 1);
+
 
     teardownClientNemesis();
     if (!leave_db_running) {
