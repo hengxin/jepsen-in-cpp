@@ -60,15 +60,15 @@ string Operation::toString(OPInfo& jop) {
                 res += key + ":" + toString(jop[key]);
                 res += i == (n - 1) ? "" : ",";
             }
-            res += '{' + res + '}';
+            res = '{' + res + '}';
         } break;
         case Json::ValueType::arrayValue: {
             int n = jop.size();
             for (int i = 0; i < n; i++) {
                 res += toString(jop[i]);
-                res += i == (n - 1) ? "," : "";
+                res += i == (n - 1) ? "" : ",";
             }
-            res += '[' + res + ']';
+            res = '[' + res + ']';
         } break;
 
         default:

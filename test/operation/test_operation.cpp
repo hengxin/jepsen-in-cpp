@@ -11,13 +11,13 @@ int main() {
 
     for (int i = 0; i < 5; i++) {
         Operation::OPInfo op;
-        op["key"] = "x";
         if (i % 2 == 0) {
             op["type"] = "r";
         } else {
             op["type"] = "w";
             info["value"] = i;
         }
+        op["key"] = "x";
         value.append(op);
     }
     info["value"] = value;
