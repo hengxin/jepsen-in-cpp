@@ -1,11 +1,11 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
+#include <boost/format.hpp>  // boost
 #include <concurrentqueue/blockingconcurrentqueue.h>
 #include <json/json.h>  // jsoncpp
 #include <memory>
 #include <string>
-
 using std::string;
 
 namespace jepsen {
@@ -16,7 +16,8 @@ using OperationQueuePtr = std::shared_ptr<OperationQueue>;
 class Operation {
 public:
     using OPInfo = Json::Value;
-    enum Status { kInit, kInvoke, kSuccess, kFailed, kInfo };
+    enum Status { kInit, kInvoke, kSuccess, kFailed, kInfo, kExit };
+    const string StatusStr[6] = {":init", ":invoke", ":ok", ":fail", ":info", ":exit"};
 
     // Constructors
     Operation() : type(""), status(kInit){};
@@ -42,6 +43,8 @@ public:
     inline void setStatus(Status status) {
         this->status = status;
     }
+    string toString(OPInfo& jop);
+    string toString();
 
 private:
     int process;
@@ -72,6 +75,11 @@ public:
         op["value"] = value;
         op["old-value"] = old;
         return Operation("cas", op, Operation::kInvoke);
+    }
+
+    static Operation exit() {
+        Operation::OPInfo op;
+        return Operation("exit", op, Operation::kExit);
     }
 };
 

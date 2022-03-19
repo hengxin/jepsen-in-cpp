@@ -1,4 +1,5 @@
 #include "ETCDClient.h"
+#include "Generator.h"
 #include "Worker.h"
 #include <future>
 
@@ -10,6 +11,16 @@ const string b0 = "47.108.193.81";
 const string b1 = "47.108.227.187";
 const string b2 = "47.108.208.93";
 
+vector<Operation> randomOperations() {
+    std::vector<Operation> ops;
+    ops.push_back(OperationFactory::read("x"));
+    ops.push_back(OperationFactory::write("x", "1"));
+    ops.push_back(OperationFactory::read("x"));
+    ops.push_back(OperationFactory::write("x", "3"));
+    ops.push_back(OperationFactory::read("x"));
+    return ops;
+}
+
 void testETCDWorker() {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"));
 
@@ -18,7 +29,19 @@ void testETCDWorker() {
     Client::Register<ETCDClient>();  // Register ETCDClient
     Nemesis::Register<NoopNemesis>();
     shared_ptr<ClientWorker> p1 = std::make_shared<ClientWorker>(1, b0);
+    auto ops = randomOperations();
+    GeneratorPtr gen = std::make_shared<VectorGenerator>(ops);
+    JepsenContext ctx(1);
     p1->open(0);
+
+    while (true) {
+        auto op = gen->op(ctx);
+        if (op.getStatus() == Operation::kExit) {
+            break;
+        }
+        p1->invoke(op);
+    }
+
     {
         Operation::OPInfo op;
         op["key"] = "x";
@@ -62,7 +85,8 @@ int main() {
     log4cplus::PropertyConfigurator::doConfigure(
         LOG4CPLUS_TEXT("/home/young/github-projects/jepsen-in-cpp/src/log4cplus.cfg"));
 
-    testNemesisFuture();
+    // testNemesisFuture();
+    testETCDWorker();
 
     return 0;
 }

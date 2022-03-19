@@ -26,9 +26,13 @@ public:
     }
     virtual void update(const JepsenContext& context, const Operation& op) {}
     virtual Operation op(const JepsenContext& context) {
-        auto& op = operations.front();
-        operations.pop();
-        return op;
+        if (!operations.empty()) {
+            auto& op = operations.front();
+            operations.pop();
+            return op;
+        } else {
+            return OperationFactory::exit();
+        }
     }
 
 private:
