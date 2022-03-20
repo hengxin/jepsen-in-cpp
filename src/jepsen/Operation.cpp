@@ -75,8 +75,8 @@ string Operation::toString(OPInfo& jop) {
 
 
 string Operation::toString() {
-    boost::format fmt("{:type %s, :f %s, :value %s, :process %d}");
-    fmt % TypeStr[type] % func % toString(op) % process;
+    boost::format fmt("{:type %s, :f %s, :value %s, :process %d, :time %lld}");
+    fmt % TypeStr[type] % func % toString(op) % process % time;
     return fmt.str();
 }
 

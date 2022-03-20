@@ -25,14 +25,14 @@ void testETCDWorker() {
     log4cplus::Logger logger = log4cplus::Logger::getInstance(LOG4CPLUS_TEXT("runner"));
 
     vector<string> nodes{b0, b1, b2};
+    OperationQueuePtr completions = std::make_shared<OperationQueue>(2);
 
     Client::Register<ETCDClient>();  // Register ETCDClient
     Nemesis::Register<NoopNemesis>();
-    shared_ptr<ClientWorker> p1 = std::make_shared<ClientWorker>(1, b0);
+    shared_ptr<Worker> p1 = std::make_shared<ClientWorker>(1, completions, b0);
     auto ops = randomOperations();
     GeneratorPtr gen = std::make_shared<VectorGenerator>(ops);
     JepsenContext ctx(1);
-    p1->open(0);
 
     while (true) {
         auto op = gen->op(ctx);

@@ -15,6 +15,7 @@ public:
     Generator() = default;
     virtual void update(const JepsenContext& context, const Operation& op) = 0;
     virtual Operation op(const JepsenContext& context) = 0;
+    void fillIn(const JepsenContext& context, Operation& op);
 };
 
 class VectorGenerator : public Generator {
@@ -29,6 +30,7 @@ public:
         if (!operations.empty()) {
             auto op = operations.front();
             operations.pop();
+            fillIn(context, op);
             return op;
         } else {
             return OperationFactory::exit();

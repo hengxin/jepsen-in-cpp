@@ -2,6 +2,7 @@
 #define NEMESIS_H
 
 #include "Client.h"
+#include "include/constant.h"
 
 namespace jepsen {
 // Refer to https://www.zhihu.com/question/419982799/answer/1461745869

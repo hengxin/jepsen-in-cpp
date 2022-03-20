@@ -39,6 +39,8 @@ struct SSHInfo {
 
 class Runner {
 public:
+    using microseconds = std::chrono::microseconds;
+    const microseconds kMaxPendingInterval = microseconds(1000);
     Runner() = delete;
     Runner(std::vector<string>& nodes, int concurrency, SSHInfo& ssh, bool leave_db_running = false)
         : nodes(nodes),
@@ -48,9 +50,9 @@ public:
           leave_db_running(leave_db_running) {
         this->initLogger();
         this->initRemotes();
-        this->setClientAndNemesis();
     }
     void run();
+    void runCases();
     void initLogger();
     void initRemotes();
     void setOS(OSPtr& os);
@@ -72,6 +74,9 @@ public:
     // Parallel
     void withLoggerNDC(string node, std::function<void()> f);
 
+    // History
+    void saveHistory();
+
 private:
     std::vector<string> nodes;
     int concurrency;
@@ -83,11 +88,13 @@ private:
     shared_ptr<Checker> checker;
 
     std::vector<WorkerPtr> workers;
+    std::unordered_map<int, int> process_to_thread;
     std::vector<Operation> history;
 
     // TODO: shared a shared_ptr<unordered_map> ?
     std::unordered_map<string, SSHRemotePtr> remotes;
     //
+    long long relative_time;
     std::future<bool> nf;
     std::vector<ClientPtr> clients;
     std::vector<int> indexs;

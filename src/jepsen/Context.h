@@ -2,6 +2,8 @@
 #define CONTEXT_H
 
 #include "Worker.h"
+#include <chrono>
+#include <random>
 #include <set>
 #include <unordered_map>
 
@@ -9,14 +11,17 @@ namespace jepsen {
 
 class JepsenContext {
 public:
-    JepsenContext(int concurrency) : time(0) {
-        for (int i = 0; i <= concurrency; i++) {
+    JepsenContext(int concurrency)
+        : time(std::chrono::system_clock::now().time_since_epoch().count()) {
+        for (int i = 0; i < concurrency; i++) {
             free_threads.insert(i);
         }
+        free_threads.insert(kNemesisProcess);
     }
 
-private:
-    int time;
+    int randomFreeProcess() const;
+
+    long long time;
     std::set<int> free_threads;
 };
 

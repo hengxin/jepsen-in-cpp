@@ -48,15 +48,6 @@ void Runner::setDB(DBPtr& db) {
     this->db->initRemotes(remotes);
 }
 
-void Runner::setClientAndNemesis() {
-    workers.reserve(concurrency + 1);  // workers[0] is nemesis and others are clients
-    workers.emplace_back(std::make_shared<NemesisWorker>(0));
-    for (int i = 1; i <= concurrency; i++) {
-        auto node = nodes[(i - 1) % nodes.size()];
-        workers.emplace_back(std::make_shared<ClientWorker>(i, node));
-    }
-}
-
 
 void Runner::setGenerator(GeneratorPtr& generator) {
     this->generator = generator;
@@ -159,6 +150,96 @@ void Runner::teardownClientNemesis() {
     nf.get();
 }
 
+void Runner::saveHistory() {
+    for (auto& op : history) {
+        LOG4CPLUS_INFO(logger, op.toString().c_str());
+    }
+}
+
+void Runner::runCases() {
+    JepsenContext ctx(concurrency);
+    OperationQueuePtr completions = std::make_shared<OperationQueue>(concurrency + 1);
+
+    // workers[concurrency] is nemesis and others are clients
+    workers.reserve(concurrency + 1);
+    for (int i = 0; i < concurrency; i++) {
+        auto node = nodes[i % nodes.size()];
+        workers.emplace_back(std::make_shared<ClientWorker>(i, completions, node));
+        process_to_thread[i] = i;
+    }
+    workers.emplace_back(std::make_shared<NemesisWorker>(0, completions));
+    process_to_thread[kNemesisProcess] = kNemesisProcess;
+
+    for (auto& worker : workers) {
+        worker->run();
+    }
+
+    int outstanding = 0;
+    auto poll_timeout = microseconds(0);  // milliseconds
+
+    while (true) {
+        Operation op;
+        if (completions->wait_dequeue_timed(op, poll_timeout)) {
+            auto thread = process_to_thread[op.process];
+            auto& worker = workers[thread];  // TODO: process and thread , mod?
+            auto time = std::chrono::system_clock::now().time_since_epoch().count();
+            op.time = time;
+            ctx.time = time;
+            ctx.free_threads.insert(thread);
+            generator->update(ctx, op);
+            // it is not nemesis
+            if (op.process != kNemesisProcess && op.type == Operation::kInfo) {
+                auto next_process = op.process + concurrency;
+                process_to_thread[next_process] = process_to_thread[op.process];
+                process_to_thread.erase(op.process);
+            }
+            history.emplace_back(op);
+            outstanding--;
+            poll_timeout = microseconds(0);
+        } else {
+            auto time = std::chrono::system_clock::now().time_since_epoch().count();
+            ctx.time = time;
+            auto op = generator->op(ctx);
+            switch (op.type) {
+                case Operation::kNil:
+                case Operation::kExit: {
+                    if (outstanding > 0) {
+                        poll_timeout = kMaxPendingInterval;
+                        continue;
+                    } else {
+                        std::for_each(
+                            std::execution::par, workers.begin(), workers.end(), [](auto& worker) {
+                                worker->putOp(OperationFactory::exit());
+                                worker->exit();
+                            });
+                        saveHistory();
+                    }
+                } break;
+                case Operation::kPending: {
+                    poll_timeout = kMaxPendingInterval;
+                    continue;
+                } break;
+                default: {
+                    if (time < op.time) {
+                        poll_timeout = microseconds((op.time - time) / 1000);
+                        continue;
+                    } else {
+                        auto thread = process_to_thread[op.process];
+                        auto& worker = workers[thread];
+                        worker->putOp(op);
+                        ctx.time = op.time;
+                        ctx.free_threads.erase(thread);
+                        generator->update(ctx, op);
+                        history.emplace_back(op);
+                        outstanding++;
+                        poll_timeout = microseconds(0);
+                    }
+                };
+            }
+        }
+    }
+}
+
 void Runner::run() {
     LOG4CPLUS_INFO(logger, "Jepsen-Runner start running");
 
@@ -166,18 +247,9 @@ void Runner::run() {
     teardownDB();
     setupDB();
 
-    auto relative_time = std::chrono::system_clock::now();
+    relative_time = std::chrono::system_clock::now().time_since_epoch().count();
     setupClientNemesis();
-
-    JepsenContext ctx(concurrency);
-    std::vector<int> worker_ids(concurrency + 1);
-    for (int i = 0; i <= concurrency; i++) {
-        worker_ids[i] = i;
-    }
-
-    OperationQueuePtr completions = std::make_shared<OperationQueue>(concurrency + 1);
-
-
+    runCases();
     teardownClientNemesis();
     if (!leave_db_running) {
         teardownDB();

@@ -1,7 +1,10 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
+#include "include/constant.h"
 #include <boost/format.hpp>  // boost
+#include <boost/lockfree/spsc_queue.hpp>
+#include <chrono>
 #include <concurrentqueue/blockingconcurrentqueue.h>
 #include <json/json.h>  // jsoncpp
 #include <memory>
@@ -16,11 +19,11 @@ using OperationQueuePtr = std::shared_ptr<OperationQueue>;
 class Operation {
 public:
     using OPInfo = Json::Value;
-    enum Type { kInit, kInvoke, kSuccess, kFailed, kInfo, kExit };
-    const string TypeStr[6] = {":init", ":invoke", ":ok", ":fail", ":info", ":exit"};
-
+    enum Type { kInit, kInvoke, kSuccess, kFailed, kInfo, kExit, kNil, kPending };
+    const string TypeStr[8] = {
+        ":init", ":invoke", ":ok", ":fail", ":info", ":exit", ":nil", ":pending"};
     // Constructors
-    Operation() : type(kInit), process(-1){};
+    Operation() : type(kInit){};
     explicit Operation(Type type) : type(type) {}
     Operation(string func, OPInfo op, Type type) : type(type), op(op), func(func) {}
     Operation(const Operation& rhs) : Operation(rhs.func, rhs.op, rhs.type){};
@@ -44,7 +47,8 @@ public:
     string func;  // function of the operation, like write, read, compare-and-set, etc.
     OPInfo op;
     OPInfo helper;  // Help to store other informations
-    int process = -1;
+    long long time = 0;
+    int process = kInvalidProcess;
 };
 
 class OperationFactory {
