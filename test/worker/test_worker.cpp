@@ -36,38 +36,30 @@ void testETCDWorker() {
 
     while (true) {
         auto op = gen->op(ctx);
-        if (op.getStatus() == Operation::kExit) {
+        LOG4CPLUS_INFO(logger, op.toString().c_str());
+        if (op.type == Operation::kExit) {
             break;
         }
         p1->invoke(op);
+        LOG4CPLUS_INFO(logger, op.toString().c_str());
     }
 
     {
-        Operation::OPInfo op;
-        op["key"] = "x";
-        op["value"] = "2";
-        Operation w1("w", op, Operation::kInvoke);
+        auto w1 = OperationFactory::write("x", 1);
         p1->invoke(w1);
+        LOG4CPLUS_INFO(logger, w1.toString().c_str());
     }
 
     {
-        Operation::OPInfo op;
-        op["key"] = "x";
-        Operation r1("r", op, Operation::kInvoke);
+        auto r1 = OperationFactory::read("x");
         p1->invoke(r1);
-        string key = r1.getOp("key").asString();
-        string val = r1.getOp("value").asString();
-        LOG4CPLUS_INFO(logger, "read from key " << key.c_str() << " with value " << val.c_str());
+        LOG4CPLUS_INFO(logger, r1.toString().c_str());
     }
 
     {
-        Operation::OPInfo op;
-        op["key"] = "y";
-        Operation r1("r", op, Operation::kInvoke);
+        auto r1 = OperationFactory::read("x");
         p1->invoke(r1);
-        string key = r1.getOp("key").asString();
-        string val = r1.getOp("value").asString();
-        LOG4CPLUS_INFO(logger, "read from key " << key.c_str() << " with value " << val.c_str());
+        LOG4CPLUS_INFO(logger, r1.toString().c_str());
     }
 }
 

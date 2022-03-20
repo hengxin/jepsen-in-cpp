@@ -8,27 +8,23 @@ Operation& Operation::operator=(const Operation& rhs) {
 
     this->type = rhs.type;
     this->op = rhs.op;
-    this->status = rhs.status;
+    this->func = rhs.func;
     this->process = rhs.process;
 
     return *this;
 }
 
-string& Operation::getType() {
-    return this->type;
-}
+Operation& Operation::operator=(Operation&& rhs) {
+    this->type = rhs.type;
+    this->op = rhs.op;
+    this->func = rhs.func;
+    this->process = rhs.process;
 
-Operation::OPInfo& Operation::getOp() {
-    return this->op;
+    return *this;
 }
 
 Operation::OPInfo& Operation::getOp(string key) {
     return this->op[key];
-}
-
-
-Operation::Status Operation::getStatus() {
-    return this->status;
 }
 
 string Operation::toString(OPInfo& jop) {
@@ -58,7 +54,7 @@ string Operation::toString(OPInfo& jop) {
             for (int i = 0; i < n; i++) {
                 auto key = keys[i];
                 res += key + ":" + toString(jop[key]);
-                res += i == (n - 1) ? "" : ",";
+                res += i == (n - 1) ? "" : ", ";
             }
             res = '{' + res + '}';
         } break;
@@ -66,7 +62,7 @@ string Operation::toString(OPInfo& jop) {
             int n = jop.size();
             for (int i = 0; i < n; i++) {
                 res += toString(jop[i]);
-                res += i == (n - 1) ? "" : ",";
+                res += i == (n - 1) ? "" : " ";
             }
             res = '[' + res + ']';
         } break;
@@ -80,7 +76,7 @@ string Operation::toString(OPInfo& jop) {
 
 string Operation::toString() {
     boost::format fmt("{:type %s, :f %s, :value %s, :process %d}");
-    fmt % StatusStr[status] % type % toString(op) % process;
+    fmt % TypeStr[type] % func % toString(op) % process;
     return fmt.str();
 }
 

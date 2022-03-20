@@ -34,4 +34,4 @@ struct Context {
 };
 }  // namespace jepsen
 
-#endif REMOTE_SPEC_H
+#endif

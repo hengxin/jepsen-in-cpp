@@ -16,64 +16,61 @@ using OperationQueuePtr = std::shared_ptr<OperationQueue>;
 class Operation {
 public:
     using OPInfo = Json::Value;
-    enum Status { kInit, kInvoke, kSuccess, kFailed, kInfo, kExit };
-    const string StatusStr[6] = {":init", ":invoke", ":ok", ":fail", ":info", ":exit"};
+    enum Type { kInit, kInvoke, kSuccess, kFailed, kInfo, kExit };
+    const string TypeStr[6] = {":init", ":invoke", ":ok", ":fail", ":info", ":exit"};
 
     // Constructors
-    Operation() : type(""), status(kInit){};
-    explicit Operation(string type) : type(type) {}
-    Operation(string type, OPInfo op, Status status) : type(type), op(op), status(status) {}
-    Operation(const Operation& operation) {
-        Operation(operation.type, operation.op, operation.status);
-    };
+    Operation() : type(kInit), process(-1){};
+    explicit Operation(Type type) : type(type) {}
+    Operation(string func, OPInfo op, Type type) : type(type), op(op), func(func) {}
+    Operation(const Operation& rhs) : Operation(rhs.func, rhs.op, rhs.type){};
+    Operation(Operation&& rhs) : Operation(rhs.func, rhs.op, rhs.type){};
+
 
     // Destructors
-    ~Operation(){
-
-    };
+    ~Operation() = default;
 
     // Operators
     Operation& operator=(const Operation& rhs);
+    Operation& operator=(Operation&& rhs);
 
-    string& getType();
-    OPInfo& getOp();
+
     OPInfo& getOp(string key);
-    Status getStatus();
 
-    inline void setStatus(Status status) {
-        this->status = status;
-    }
-    string toString(OPInfo& jop);
+    static string toString(OPInfo& jop);
     string toString();
 
-private:
-    int process;
-    string type;
+    Type type;    // type of this operation, like :init, :invoke, :ok, :fail, etc.
+    string func;  // function of the operation, like write, read, compare-and-set, etc.
     OPInfo op;
-    Status status;
+    OPInfo helper;  // Help to store other informations
+    int process = -1;
 };
 
 class OperationFactory {
 public:
-    static Operation write(string key, string value) {
+    template <typename K, typename V>
+    static Operation write(K key, V value) {
         Operation::OPInfo op;
-        op["key"] = key;
-        op["value"] = value;
-        return Operation("w", op, Operation::kInvoke);
+        op.append(key);
+        op.append(value);
+        return Operation("write", op, Operation::kInvoke);
     }
 
-    static Operation read(string key) {
+    template <typename K>
+    static Operation read(K key) {
         Operation::OPInfo op;
-        op["key"] = "x";
-        return Operation("r", op, Operation::kInvoke);
+        op.append(key);
+        op.append(Operation::OPInfo());
+        return Operation("read", op, Operation::kInvoke);
     }
 
-
-    static Operation cas(string key, string value, string old) {
+    template <typename K, typename V>
+    static Operation cas(K key, V value, V old) {
         Operation::OPInfo op;
-        op["key"] = key;
-        op["value"] = value;
-        op["old-value"] = old;
+        op.append(key);
+        op.append(value);
+        op.append(old);
         return Operation("cas", op, Operation::kInvoke);
     }
 

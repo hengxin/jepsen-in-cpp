@@ -24,10 +24,10 @@ public:
             operations.emplace(op);
         }
     }
-    virtual void update(const JepsenContext& context, const Operation& op) {}
-    virtual Operation op(const JepsenContext& context) {
+    virtual void update(const JepsenContext& context, const Operation& op) override {}
+    virtual Operation op(const JepsenContext& context) override {
         if (!operations.empty()) {
-            auto& op = operations.front();
+            auto op = operations.front();
             operations.pop();
             return op;
         } else {

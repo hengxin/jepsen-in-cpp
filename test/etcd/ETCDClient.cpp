@@ -18,37 +18,37 @@ bool ETCDClient::setup() {
 }
 
 bool ETCDClient::invoke(Operation& op) {
-    if (op.getStatus() != Operation::kInvoke) {
+    if (op.type != Operation::kInvoke) {
         return false;
     }
 
-    if (op.getType() == "w") {
-        string key = op.getOp("key").asString();
-        string val = op.getOp("value").asString();
+    if (op.func == "write") {
+        string key = op.op[0].asString();
+        string val = op.op[1].asString();
         etcd::Response response = client->put(key, val).get();
         if (response.is_ok()) {
-            op.setStatus(Operation::kSuccess);
+            op.type = Operation::kSuccess;
         } else {
-            op.setStatus(Operation::kFailed);
+            op.type = Operation::kFailed;
         }
-    } else if (op.getType() == "r") {
-        string key = op.getOp("key").asString();
+    } else if (op.func == "read") {
+        string key = op.op[0].asString();
         etcd::Response response = client->get(key).get();
         if (response.is_ok()) {
-            op.setStatus(Operation::kSuccess);
-            op.getOp("value") = response.value().as_string();
+            op.type = Operation::kSuccess;
+            op.op[1] = std::stoi(response.value().as_string());
         } else {
-            op.setStatus(Operation::kFailed);
+            op.type = Operation::kFailed;
         }
-    } else if (op.getType() == "cas") {
-        string key = op.getOp("key").asString();
-        string val = op.getOp("value").asString();
-        string old = op.getOp("old-value").asString();
+    } else if (op.func == "cas") {
+        string key = op.op[0].asString();
+        string val = op.op[1].asString();
+        string old = op.op[2].asString();
         etcd::Response response = client->modify_if(key, val, old).get();
         if (response.is_ok()) {
-            op.setStatus(Operation::kSuccess);
+            op.type = Operation::kSuccess;
         } else {
-            op.setStatus(Operation::kFailed);
+            op.type = Operation::kFailed;
         }
     }
 

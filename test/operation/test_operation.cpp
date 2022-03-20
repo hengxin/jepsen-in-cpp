@@ -23,12 +23,14 @@ int main() {
     info["value"] = value;
 
     Operation op("txn", info, Operation::kInvoke);
-
-    cout << "type: " << op.getType() << endl;
-    cout << "op: " << op.getOp() << endl;
-    cout << "status: " << op.getStatus() << endl;
-
     cout << op.toString() << endl;
+
+    Operation::OPInfo agg;
+    agg.append(":w");
+    agg.append("x");
+    agg.append(1);
+
+    cout << Operation::toString(agg) << endl;
 
     return 0;
 }
