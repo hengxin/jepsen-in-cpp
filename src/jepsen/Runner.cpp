@@ -160,15 +160,15 @@ void Runner::runCases() {
     JepsenContext ctx(concurrency);
     OperationQueuePtr completions = std::make_shared<OperationQueue>(concurrency + 1);
 
-    // workers[concurrency] is nemesis and others are clients
+    // workers[kNemesisProcess] is nemesis and others are clients
     workers.reserve(concurrency + 1);
     for (int i = 0; i < concurrency; i++) {
         auto node = nodes[i % nodes.size()];
         workers.emplace_back(std::make_shared<ClientWorker>(i, completions, node));
         process_to_thread[i] = i;
     }
-    workers.emplace_back(std::make_shared<NemesisWorker>(0, completions));
-    process_to_thread[kNemesisProcess] = kNemesisProcess;
+    // workers.emplace_back(std::make_shared<NemesisWorker>(kNemesisProcess, completions));
+    // process_to_thread[kNemesisProcess] = kNemesisProcess;
 
     for (auto& worker : workers) {
         worker->run();
@@ -177,9 +177,11 @@ void Runner::runCases() {
     int outstanding = 0;
     auto poll_timeout = microseconds(0);  // milliseconds
 
-    while (true) {
+    bool flag = true;
+    while (flag) {
         Operation op;
         if (completions->wait_dequeue_timed(op, poll_timeout)) {
+            LOG4CPLUS_INFO(logger, "Get a completed operation " << op.toString().c_str());
             auto thread = process_to_thread[op.process];
             auto& worker = workers[thread];  // TODO: process and thread , mod?
             auto time = std::chrono::system_clock::now().time_since_epoch().count();
@@ -213,6 +215,7 @@ void Runner::runCases() {
                                 worker->exit();
                             });
                         saveHistory();
+                        flag = false;
                     }
                 } break;
                 case Operation::kPending: {
@@ -220,6 +223,7 @@ void Runner::runCases() {
                     continue;
                 } break;
                 default: {
+                    LOG4CPLUS_INFO(logger, "Get a new operation " << op.toString().c_str());
                     if (time < op.time) {
                         poll_timeout = microseconds((op.time - time) / 1000);
                         continue;

@@ -1,19 +1,20 @@
 #include "ETCDClient.h"
 
 bool ETCDClient::open(string node) {
-    LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__);
+    LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__ << " in " << node.c_str());
+    this->node = node;
     string url = clientURL(node);
     client = std::shared_ptr<etcd::Client>(new etcd::Client(url));
     return true;
 }
 
 bool ETCDClient::close() {
-    LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__);
+    LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__ << " in " << node.c_str());
     return true;
 }
 
 bool ETCDClient::setup() {
-    LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__);
+    LOG4CPLUS_INFO(logger, __PRETTY_FUNCTION__ << " in " << node.c_str());
     return true;
 }
 

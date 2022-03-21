@@ -16,7 +16,7 @@ public:
         for (int i = 0; i < concurrency; i++) {
             free_threads.insert(i);
         }
-        free_threads.insert(kNemesisProcess);
+        // free_threads.insert(kNemesisProcess);
     }
 
     int randomFreeProcess() const;

@@ -25,6 +25,7 @@ protected:
 
 private:
     std::shared_ptr<etcd::Client> client;
+    string node;
 };
 
 

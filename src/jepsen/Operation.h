@@ -16,6 +16,7 @@ class Operation;
 using OperationQueue = moodycamel::BlockingConcurrentQueue<Operation>;
 using OperationQueuePtr = std::shared_ptr<OperationQueue>;
 
+// TODO: whether to define the assignment operator, copy constrcutor, move constructor, etc.
 class Operation {
 public:
     using OPInfo = Json::Value;
@@ -26,8 +27,8 @@ public:
     Operation() : type(kInit){};
     explicit Operation(Type type) : type(type) {}
     Operation(string func, OPInfo op, Type type) : type(type), op(op), func(func) {}
-    Operation(const Operation& rhs) : Operation(rhs.func, rhs.op, rhs.type){};
-    Operation(Operation&& rhs) : Operation(rhs.func, rhs.op, rhs.type){};
+    Operation(const Operation& rhs) = default;
+    Operation(Operation&& rhs) = default;
 
 
     // Destructors
@@ -81,6 +82,11 @@ public:
     static Operation exit() {
         Operation::OPInfo op;
         return Operation("exit", op, Operation::kExit);
+    }
+
+    static Operation pending() {
+        Operation::OPInfo op;
+        return Operation("pending", op, Operation::kPending);
     }
 };
 

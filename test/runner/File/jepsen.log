@@ -1,0 +1,165 @@
+2022-03-21-12:47 INFO runner <> - Start Initialize Remotes
+2022-03-21-12:47 DEBUG runner <> - SSHClient: Constructing
+2022-03-21-12:47 DEBUG runner <> - SSHRemote to 47.108.193.81
+2022-03-21-12:47 DEBUG runner <> - Call SSHClient::connectTo
+2022-03-21-12:47 DEBUG runner <> - connect to 47.108.193.81 successfully
+2022-03-21-12:47 DEBUG runner <> - SSHClient: Constructing
+2022-03-21-12:47 DEBUG runner <> - SSHRemote to 47.108.227.187
+2022-03-21-12:47 DEBUG runner <> - Call SSHClient::connectTo
+2022-03-21-12:47 DEBUG runner <> - connect to 47.108.227.187 successfully
+2022-03-21-12:47 DEBUG runner <> - SSHClient: Constructing
+2022-03-21-12:47 DEBUG runner <> - SSHRemote to 47.108.208.93
+2022-03-21-12:47 DEBUG runner <> - Call SSHClient::connectTo
+2022-03-21-12:47 DEBUG runner <> - connect to 47.108.208.93 successfully
+2022-03-21-12:47 INFO runner <> - End Initialize Remotes
+2022-03-21-12:47 INFO runner <> - Set Operating System
+2022-03-21-12:47 INFO runner <> - Jepsen-Runner start running
+2022-03-21-12:47 INFO runner <> - Start setup remote operating system
+2022-03-21-12:47 INFO runner <47.108.193.81> - Set up ubuntu system in 47.108.193.81
+2022-03-21-12:47 INFO runner <47.108.227.187> - Set up ubuntu system in 47.108.227.187
+2022-03-21-12:47 INFO runner <47.108.208.93> - Set up ubuntu system in 47.108.208.93
+2022-03-21-12:47 INFO runner <> - Finish setup remote operating system
+2022-03-21-12:47 INFO runner <> - Start teardown remote database
+2022-03-21-12:47 INFO runner <47.108.193.81> - Teardown etcd database system in 47.108.193.81
+2022-03-21-12:47 INFO runner <47.108.208.93> - Teardown etcd database system in 47.108.208.93
+2022-03-21-12:47 INFO runner <47.108.208.93> - starting etcd
+2022-03-21-12:47 INFO runner <47.108.193.81> - starting etcd
+2022-03-21-12:47 INFO runner <47.108.227.187> - Teardown etcd database system in 47.108.227.187
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c "killall -9 -w etcd"
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c "killall -9 -w etcd"
+2022-03-21-12:47 INFO runner <47.108.227.187> - starting etcd
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c "killall -9 -w etcd"
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c "rm -rf /opt/etcd/etcd.pid"
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c "rm -rf /opt/etcd/etcd.pid"
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c "rm -rf /opt/etcd/etcd.pid"
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c "rm -rf /opt/etcd"
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c "rm -rf /opt/etcd"
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c "rm -rf /opt/etcd"
+2022-03-21-12:47 INFO runner <> - Finish teardown remote database
+2022-03-21-12:47 INFO runner <> - Start setup remote database
+2022-03-21-12:47 INFO runner <47.108.193.81> - Set up etcd v3.1.5 in 47.108.193.81
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing stat /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg==
+2022-03-21-12:47 INFO runner <47.108.227.187> - Set up etcd v3.1.5 in 47.108.227.187
+2022-03-21-12:47 INFO runner <47.108.208.93> - Set up etcd v3.1.5 in 47.108.208.93
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing stat /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg==
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing stat /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg==
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - STDOUT:
+  File: /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg==
+  Size: 9379799   	Blocks: 18320      IO Block: 4096   regular file
+Device: fc01h/64513d	Inode: 1835140     Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-03-21 12:01:42.174164196 +0800
+Modify: 2017-03-28 01:36:15.000000000 +0800
+Change: 2022-03-12 17:48:15.698849649 +0800
+ Birth: -
+
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing stat /tmp/jepsen/1804289383
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - STDOUT:
+  File: /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg==
+  Size: 9379799   	Blocks: 18320      IO Block: 4096   regular file
+Device: fc01h/64513d	Inode: 1316273     Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-03-21 12:01:42.154168472 +0800
+Modify: 2017-03-28 01:36:15.000000000 +0800
+Change: 2022-03-12 17:48:19.235766903 +0800
+ Birth: -
+
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing stat /tmp/jepsen/846930886
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - STDOUT:
+  File: /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg==
+  Size: 9379799   	Blocks: 18320      IO Block: 4096   regular file
+Device: fc01h/64513d	Inode: 1313981     Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-03-21 12:01:42.352342599 +0800
+Modify: 2017-03-28 01:36:15.000000000 +0800
+Change: 2022-03-12 17:48:21.991703130 +0800
+ Birth: -
+
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing stat /tmp/jepsen/1681692777
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - STDERR:
+stat: cannot stat '/tmp/jepsen/1804289383': No such file or directory
+
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - EXIT: 1
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c "mkdir -p /tmp/jepsen/1804289383"
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - STDOUT:
+  File: /tmp/jepsen/846930886
+  Size: 4096      	Blocks: 8          IO Block: 4096   directory
+Device: fc01h/64513d	Inode: 1316275     Links: 3
+Access: (0755/drwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-03-12 19:43:21.503424535 +0800
+Modify: 2022-03-12 19:37:35.630819540 +0800
+Change: 2022-03-12 19:37:35.630819540 +0800
+ Birth: -
+
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing stat /tmp/jepsen/1714636915
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - STDOUT:
+  File: /tmp/jepsen/1681692777
+  Size: 4096      	Blocks: 8          IO Block: 4096   directory
+Device: fc01h/64513d	Inode: 1313990     Links: 3
+Access: (0755/drwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-03-12 19:37:36.227981828 +0800
+Modify: 2022-03-12 19:37:36.387997944 +0800
+Change: 2022-03-12 19:37:36.387997944 +0800
+ Birth: -
+
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing stat /tmp/jepsen/1957747793
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - STDERR:
+stat: cannot stat '/tmp/jepsen/1714636915': No such file or directory
+
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - EXIT: 1
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c "mkdir -p /tmp/jepsen/1714636915"
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c "tar --no-same-owner --no-same-permissions --extract --file /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg== -C /tmp/jepsen/1804289383"
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - STDERR:
+stat: cannot stat '/tmp/jepsen/1957747793': No such file or directory
+
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - EXIT: 1
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c "mkdir -p /tmp/jepsen/1957747793"
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c "tar --no-same-owner --no-same-permissions --extract --file /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg== -C /tmp/jepsen/1714636915"
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c "tar --no-same-owner --no-same-permissions --extract --file /tmp/jepsen/wget-cache/aHR0cHM6Ly9zdG9yYWdlLmdvb2dsZWFwaXMuY29tL2V0Y2QvdjMuMS41L2V0Y2QtdjMuMS41LWxpbnV4LWFtZDY0LnRhci5neg== -C /tmp/jepsen/1957747793"
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing ls -A /tmp/jepsen/1804289383
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - STDOUT:
+etcd-v3.1.5-linux-amd64
+
+2022-03-21-12:47 FATAL runner <47.108.193.81> - failed condition: result.size() == 0
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c "mv /tmp/jepsen/1804289383/etcd-v3.1.5-linux-amd64 /opt/etcd"
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing ls -A /tmp/jepsen/1714636915
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing ls -A /tmp/jepsen/1957747793
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c "rm -rf /tmp/jepsen/1804289383"
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - STDOUT:
+etcd-v3.1.5-linux-amd64
+
+2022-03-21-12:47 FATAL runner <47.108.227.187> - failed condition: result.size() == 0
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c "mv /tmp/jepsen/1714636915/etcd-v3.1.5-linux-amd64 /opt/etcd"
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - STDOUT:
+etcd-v3.1.5-linux-amd64
+
+2022-03-21-12:47 FATAL runner <47.108.208.93> - failed condition: result.size() == 0
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c "mv /tmp/jepsen/1957747793/etcd-v3.1.5-linux-amd64 /opt/etcd"
+2022-03-21-12:47 INFO runner <47.108.193.81> - starting etcd
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c "echo `date +'%Y-%m-%d %H:%M:%S'` Jepsen starting etcd --log-output stderr --name n0 --listen-peer-urls http://172.24.234.239:2380 --listen-client-urls http://127.0.0.1:2379,http://172.24.234.239:2379 --advertise-client-urls http://127.0.0.1:2379,http://172.24.234.239:2379 --initial-cluster-state new --initial-advertise-peer-urls http://172.24.234.239:2380 --initial-cluster n0=http://172.24.234.239:2380,n1=http://172.24.234.240:2380,n2=http://172.24.234.241:2380 >> /opt/etcd/etcd.log"
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c "rm -rf /tmp/jepsen/1714636915"
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c "rm -rf /tmp/jepsen/1957747793"
+2022-03-21-12:47 DEBUG runner <47.108.193.81> - Executing echo guazi13110 | sudo bash -c " start-stop-daemon --start  --background --no-close  --make-pidfile --exec etcd  --pidfile /opt/etcd/etcd.pid --chdir /opt/etcd --oknodo  --startas etcd --  --log-output stderr --name n0 --listen-peer-urls http://172.24.234.239:2380 --listen-client-urls http://127.0.0.1:2379,http://172.24.234.239:2379 --advertise-client-urls http://127.0.0.1:2379,http://172.24.234.239:2379 --initial-cluster-state new --initial-advertise-peer-urls http://172.24.234.239:2380 --initial-cluster n0=http://172.24.234.239:2380,n1=http://172.24.234.240:2380,n2=http://172.24.234.241:2380 >> /opt/etcd/etcd.log 2>&1"
+2022-03-21-12:47 INFO runner <47.108.227.187> - starting etcd
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c "echo `date +'%Y-%m-%d %H:%M:%S'` Jepsen starting etcd --log-output stderr --name n1 --listen-peer-urls http://172.24.234.240:2380 --listen-client-urls http://127.0.0.1:2379,http://172.24.234.240:2379 --advertise-client-urls http://127.0.0.1:2379,http://172.24.234.240:2379 --initial-cluster-state new --initial-advertise-peer-urls http://172.24.234.240:2380 --initial-cluster n0=http://172.24.234.239:2380,n1=http://172.24.234.240:2380,n2=http://172.24.234.241:2380 >> /opt/etcd/etcd.log"
+2022-03-21-12:47 INFO runner <47.108.208.93> - starting etcd
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c "echo `date +'%Y-%m-%d %H:%M:%S'` Jepsen starting etcd --log-output stderr --name n2 --listen-peer-urls http://172.24.234.241:2380 --listen-client-urls http://127.0.0.1:2379,http://172.24.234.241:2379 --advertise-client-urls http://127.0.0.1:2379,http://172.24.234.241:2379 --initial-cluster-state new --initial-advertise-peer-urls http://172.24.234.241:2380 --initial-cluster n0=http://172.24.234.239:2380,n1=http://172.24.234.240:2380,n2=http://172.24.234.241:2380 >> /opt/etcd/etcd.log"
+2022-03-21-12:47 DEBUG runner <47.108.227.187> - Executing echo guazi13110 | sudo bash -c " start-stop-daemon --start  --background --no-close  --make-pidfile --exec etcd  --pidfile /opt/etcd/etcd.pid --chdir /opt/etcd --oknodo  --startas etcd --  --log-output stderr --name n1 --listen-peer-urls http://172.24.234.240:2380 --listen-client-urls http://127.0.0.1:2379,http://172.24.234.240:2379 --advertise-client-urls http://127.0.0.1:2379,http://172.24.234.240:2379 --initial-cluster-state new --initial-advertise-peer-urls http://172.24.234.240:2380 --initial-cluster n0=http://172.24.234.239:2380,n1=http://172.24.234.240:2380,n2=http://172.24.234.241:2380 >> /opt/etcd/etcd.log 2>&1"
+2022-03-21-12:47 DEBUG runner <47.108.208.93> - Executing echo guazi13110 | sudo bash -c " start-stop-daemon --start  --background --no-close  --make-pidfile --exec etcd  --pidfile /opt/etcd/etcd.pid --chdir /opt/etcd --oknodo  --startas etcd --  --log-output stderr --name n2 --listen-peer-urls http://172.24.234.241:2380 --listen-client-urls http://127.0.0.1:2379,http://172.24.234.241:2379 --advertise-client-urls http://127.0.0.1:2379,http://172.24.234.241:2379 --initial-cluster-state new --initial-advertise-peer-urls http://172.24.234.241:2380 --initial-cluster n0=http://172.24.234.239:2380,n1=http://172.24.234.240:2380,n2=http://172.24.234.241:2380 >> /opt/etcd/etcd.log 2>&1"
+2022-03-21-12:47 INFO runner <> - Runner set up primaries of databases
+2022-03-21-12:47 INFO runner <> - Set up primary in 47.108.193.81
+2022-03-21-12:47 INFO runner <> - Finish setup remote database
+2022-03-21-12:47 INFO runner <> - jepsen::NoopNemesis::NoopNemesis()
+2022-03-21-12:47 INFO runner <> - ETCDClient::ETCDClient()
+2022-03-21-12:47 INFO runner <> - ETCDClient::ETCDClient()
+2022-03-21-12:47 INFO runner <> - ETCDClient::ETCDClient()
+2022-03-21-12:47 INFO runner <47.108.193.81> - virtual bool ETCDClient::open(std::string) in 47.108.193.81
+2022-03-21-12:47 INFO runner <> - NoopNemesis setup
+2022-03-21-12:47 INFO runner <47.108.227.187> - virtual bool ETCDClient::open(std::string) in 47.108.227.187
+2022-03-21-12:47 INFO runner <47.108.208.93> - virtual bool ETCDClient::open(std::string) in 47.108.208.93
+2022-03-21-12:47 INFO runner <47.108.227.187> - virtual bool ETCDClient::setup() in 47.108.227.187
+2022-03-21-12:47 INFO runner <47.108.208.93> - virtual bool ETCDClient::setup() in 47.108.208.93
+2022-03-21-12:47 INFO runner <47.108.193.81> - virtual bool ETCDClient::setup() in 47.108.193.81
+2022-03-21-12:47 INFO runner <> - jepsen::NoopNemesis::NoopNemesis()
+2022-03-21-12:47 INFO runner <Worker0> - worker0 Start to connect to node0
+2022-03-21-12:47 INFO runner <Nemesis> - nemesis Start to connect to node-1

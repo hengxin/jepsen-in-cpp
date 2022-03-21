@@ -7,18 +7,22 @@ Operation& Operation::operator=(const Operation& rhs) {
     }
 
     this->type = rhs.type;
-    this->op = rhs.op;
     this->func = rhs.func;
+    this->op = rhs.op;
+    this->helper = rhs.helper;
     this->process = rhs.process;
+    this->time = rhs.time;
 
     return *this;
 }
 
 Operation& Operation::operator=(Operation&& rhs) {
     this->type = rhs.type;
-    this->op = rhs.op;
     this->func = rhs.func;
+    this->op = std::move(rhs.op);
+    this->helper = std::move(rhs.helper);
     this->process = rhs.process;
+    this->time = rhs.time;
 
     return *this;
 }

@@ -28,6 +28,9 @@ public:
     virtual void update(const JepsenContext& context, const Operation& op) override {}
     virtual Operation op(const JepsenContext& context) override {
         if (!operations.empty()) {
+            if (context.free_threads.empty()) {
+                return OperationFactory::pending();
+            }
             auto op = operations.front();
             operations.pop();
             fillIn(context, op);

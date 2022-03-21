@@ -37,3 +37,6 @@ build/
 
 # VSCode Settings
 .vscode
+
+# log
+src/jepsen/File
