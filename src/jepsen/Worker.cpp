@@ -29,7 +29,7 @@ Operation Worker::runAsync() {
                 default: {
                     invoke(op);
                     LOG4CPLUS_INFO(logger, op.toString().c_str());
-                    out->try_enqueue(op);
+                    out->enqueue(op);
                 }
             }
         } else {

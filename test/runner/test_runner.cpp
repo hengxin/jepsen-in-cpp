@@ -20,7 +20,7 @@ int main() {
 
     vector<string> nodes{b0, b1, b2};
     SSHInfo ssh("young", "guazi13110", "guazi13110", 22, "/home/young/.ssh/id_rsa", false);
-    Runner runner(nodes, 1, ssh, true);
+    Runner runner(nodes, 5, ssh, true);
     // Initialize Operating System
     OSPtr os = std::make_shared<Ubuntu>();
     runner.setOS(os);
@@ -30,11 +30,14 @@ int main() {
     // Initialize Generator
     std::vector<Operation> ops;
 
-    ops.push_back(OperationFactory::read("x"));
-    ops.push_back(OperationFactory::write("x", "1"));
-    ops.push_back(OperationFactory::read("x"));
-    ops.push_back(OperationFactory::write("x", "2"));
-    ops.push_back(OperationFactory::read("x"));
+    string keys = "abcdefghijklmn";
+    for (auto key : keys) {
+        ops.push_back(OperationFactory::read(key));
+        ops.push_back(OperationFactory::write(key, "1"));
+        ops.push_back(OperationFactory::read(key));
+        ops.push_back(OperationFactory::write(key, "2"));
+        ops.push_back(OperationFactory::read(key));
+    }
 
     GeneratorPtr gen = std::make_shared<VectorGenerator>(ops);
     runner.setGenerator(gen);

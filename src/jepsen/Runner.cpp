@@ -207,6 +207,7 @@ void Runner::runCases() {
                 case Operation::kExit: {
                     if (outstanding > 0) {
                         poll_timeout = kMaxPendingInterval;
+                        // LOG4CPLUS_INFO(logger, "Wating for outstanding " << outstanding);
                         continue;
                     } else {
                         std::for_each(
