@@ -1,3 +1,6 @@
+set_project("Jepsen-in-cpp")
+set_version("0.0.1", {build = "%Y%m%d%H%M"})
+
 add_rules("mode.debug", "mode.release")
 
 add_requires("libssh2")
