@@ -44,3 +44,4 @@ src/jepsen/File
 # CLion
 .idea
 cmake-build-debug
+CMakeLists.txt
