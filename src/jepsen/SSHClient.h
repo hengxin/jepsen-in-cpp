@@ -34,6 +34,16 @@ public:
         {
             // libssh2_init is not thread safe
             lock_guard<mutex> lck(init_mutex);
+#ifdef WIN32
+            WSADATA wsadata;
+            int err;
+
+            err = WSAStartup(MAKEWORD(2, 0), &wsadata);
+            if(err != 0) {
+                fprintf(stderr, "WSAStartup failed with error: %d\n", err);
+                exit(-1);  // TODO: in search of a good method to safely exit
+            }
+#endif
             int rc;
             if (rc = libssh2_init(0)) {
                 fprintf(stderr, "SSHClient::libssh2 initialization failed (%d)\n", rc);

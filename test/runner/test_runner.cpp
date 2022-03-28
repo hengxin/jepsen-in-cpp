@@ -1,5 +1,7 @@
 #include "ETCD.h"
+#ifndef WIN32
 #include "ETCDClient.h"
+#endif
 #include "Runner.h"
 
 using namespace jepsen;
@@ -12,10 +14,16 @@ const string b2 = "47.108.208.93";
 
 int main() {
     log4cplus::Initializer initializer;
+#ifdef LOG4CPLUS_CONFIG
     log4cplus::PropertyConfigurator::doConfigure(
-        LOG4CPLUS_TEXT("/home/young/github-projects/jepsen-in-cpp/src/log4cplus.cfg"));
+        LOG4CPLUS_TEXT(LOG4CPLUS_CONFIG));
+#endif
 
+#ifdef WIN32
+    Client::Register<NoopClient>();
+#else
     Client::Register<ETCDClient>();
+#endif
     Nemesis::Register<NoopNemesis>();
 
     vector<string> nodes{b0, b1, b2};

@@ -8,8 +8,38 @@ add_requires("log4cplus")
 add_requires("jsoncpp")
 add_requires("boost")
 add_requires("concurrentqueue")
+add_requires("tbb")
 
 set_languages("cxx17")
+
+-- Configuration
+target("config")
+    includes("check_cxxincludes.lua")
+    includes("check_cxxfuncs.lua")
+    includes("check_macros.lua")
+    set_kind("static") -- TODO: Which
+    -- Platform checks
+    -- From libssh2, refer to https://github.com/libssh2/libssh2/blob/master/example/CMakeLists.txt
+    set_configdir("config")
+    add_configfiles("config/libssh2_config.h.in", {filename = "libssh2_config.h"})
+    configvar_check_cxxincludes("HAVE_INTTYPES_H", "inttypes.h")
+    configvar_check_cxxincludes("HAVE_UNISTD_H", "unistd.h")
+    configvar_check_cxxincludes("HAVE_STDLIB_H", "stdlib.h")
+    configvar_check_cxxincludes("HAVE_SYS_SELECT_H", "sys/select.h")
+    configvar_check_cxxincludes("HAVE_SYS_SOCKET_H", "sys/socket.h")
+    configvar_check_cxxincludes("HAVE_SYS_TIME_H", "sys/time.h")
+    configvar_check_cxxincludes("HAVE_ARPA_INET_H", "arpa/inet.h")
+    configvar_check_cxxincludes("HAVE_NETINET_IN_H", "netinet/in.h")
+    configvar_check_cxxincludes("HAVE_WINSOCK2_H", "winsock2.h")
+
+    configvar_check_cxxfuncs ("HAVE_STRCASECMP", "strcasecmp", {includes = {"strings.h"}})
+    configvar_check_cxxfuncs ("HAVE__STRICMP", "_stricmp", {includes = {"string.h"}})
+    configvar_check_cxxfuncs ("HAVE_SNPRINTF", "snprintf", {includes = {"stdio.h"}})
+    configvar_check_cxxfuncs ("HAVE__SNPRINTF", "_snprintf", {includes = {"stdio.h"}})
+
+    configvar_check_macros("HAVE___FUNC__", "__func__")
+    configvar_check_macros("HAVE___FUNCTION__", "__FUNCTION__")
+    configvar_check_macros("HAVE___PRETTY_FUNCTION__", "__PRETTY_FUNCTION__")
 
 -- Src
 -- target("control")
@@ -39,17 +69,25 @@ target("test-operation")
 target("test-runner")
     set_kind("binary")
     add_files("test/runner/*.cpp")
-    add_files("test/etcd/*.cpp")
+    add_files("test/etcd/ETCD.cpp")
     add_files("src/jepsen/*.cpp", "src/jepsen/utils/*.cpp")
     add_includedirs("src/jepsen")
     add_includedirs("src/jepsen/include", "src/jepsen/utils")
     add_includedirs("test/etcd")
-    add_packages("jsoncpp", "log4cplus", "libssh2", "boost", "concurrentqueue")
-    add_syslinks("pthread")
+    add_includedirs("config")
+    add_packages("jsoncpp", "log4cplus", "libssh2", "boost", "concurrentqueue", "tbb")
     add_syslinks("tbb")
-    add_syslinks("boost_system", "boost_filesystem")
-    add_syslinks("etcd-cpp-api", "protobuf", "grpc++", "z", "cpprest", "ssl", "crypto", "boost_system")
-    
+    if is_plat("linux", "macosx") then
+        add_defines("LOG4CPLUS_CONFIG=\"/home/young/github-projects/jepsen-in-cpp/config/log4cplus.cfg\"")
+        add_syslinks("pthread")
+        add_syslinks("boost_system", "boost_filesystem")
+        add_syslinks("etcd-cpp-api", "protobuf", "grpc++", "z", "cpprest", "ssl", "crypto")
+    end
+    if is_plat("windows") then
+        add_defines("LOG4CPLUS_CONFIG=\"D://Education//Programs//Cpp//jepsen-in-cpp//config//log4cplus.cfg\"")
+        add_syslinks("libboost_filesystem-mt-s")
+    end
+
 target("test-worker")
     set_kind("binary")
     add_files("test/worker/*.cpp")
@@ -79,11 +117,13 @@ target("test-remote")
 ---- Test for libssh2
 target("test-libssh2-ssh2")
     set_kind("binary")
+    add_includedirs("config")
     add_files("test/libssh2/ssh2.cpp")
     add_packages("libssh2")
 
 target("test-libssh2-ssh2-exec")
     set_kind("binary")
+    add_includedirs("config")
     add_files("test/libssh2/ssh2_exec.cpp")
     add_packages("libssh2")
 

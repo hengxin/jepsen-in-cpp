@@ -8,6 +8,7 @@
 #include <boost/filesystem/path.hpp>
 #include <regex>
 #include <vector>
+#include <optional>
 
 namespace jepsen {
 using RemotePtr = SSHRemotePtr;

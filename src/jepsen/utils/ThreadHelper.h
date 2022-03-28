@@ -4,6 +4,7 @@
 // refer to https://stackoverflow.com/questions/10121560/stdthread-naming-your-thread
 #ifdef _WIN32
 #include <windows.h>
+#include <thread>
 const DWORD MS_VC_EXCEPTION = 0x406D1388;
 
 #pragma pack(push, 8)

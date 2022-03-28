@@ -1,36 +1,13 @@
 #ifndef SSH_CLIENT_CONFIG_H
 #define SSH_CLIENT_CONFIG_H
 
-#define HAVE_SYS_SOCKET_H
-#define HAVE_NETINET_IN_H
-#define HAVE_SYS_SELECT_H
-#define HAVE_UNISTD_H
-#define HAVE_ARPA_INET_H
-#define HAVE_SYS_TIME_H
-#define HAVE_STDLIB_H
-
 #include "include/log4cplus.h"
+#include "libssh2_config.h"
 #include <iostream>
 #include <libssh2.h>
 #include <memory>
 #include <mutex>
 #include <string>
-
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_ARPA_INET_H
-#include <arpa/inet.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 
 static int waitsocket(int socket_fd, LIBSSH2_SESSION* session) {
     struct timeval timeout;
