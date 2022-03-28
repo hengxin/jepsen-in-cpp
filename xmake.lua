@@ -17,9 +17,10 @@ target("config")
     includes("check_cxxincludes.lua")
     includes("check_cxxfuncs.lua")
     includes("check_macros.lua")
-    set_kind("static") -- TODO: Which
     -- Platform checks
     -- From libssh2, refer to https://github.com/libssh2/libssh2/blob/master/example/CMakeLists.txt
+    add_files("config/main.cpp")
+    add_includedirs("config")
     set_configdir("config")
     add_configfiles("config/libssh2_config.h.in", {filename = "libssh2_config.h"})
     configvar_check_cxxincludes("HAVE_INTTYPES_H", "inttypes.h")
