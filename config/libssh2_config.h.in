@@ -26,6 +26,7 @@ ${define HAVE__SNPRINTF}
 /* Symbols */
 ${define HAVE___FUNC__}
 ${define HAVE___FUNCTION__}
+${define HAVE___PRETTY_FUNCTION__}
 
 /* Workaround for platforms without C90 __func__ */
 #ifndef HAVE___FUNC__
@@ -37,6 +38,8 @@ ${define HAVE___FUNCTION__}
 
 /* Workaround for platforms without gcc __PRETTY_FUNCTION__ */
 #ifndef HAVE___PRETTY_FUNCTION__
+# ifdef __FUNCSIG__
 # define __PRETTY_FUNCTION__  __FUNCSIG__
 # define HAVE___PRETTY_FUNCTION__
+# endif
 #endif

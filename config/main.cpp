@@ -1,4 +1,3 @@
-#include "libssh2_config.h"
 #include <iostream>
 
 int main() {

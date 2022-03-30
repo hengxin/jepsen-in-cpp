@@ -38,6 +38,9 @@ build/
 # VSCode Settings
 .vscode
 
+# config
+config/libssh2_config.h
+
 # log
 src/jepsen/File
 

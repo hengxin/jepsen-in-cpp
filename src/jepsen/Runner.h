@@ -9,6 +9,7 @@
 #include "SSHRemote.h"
 #include "Worker.h"
 #include "generator/Generator.h"
+#include "generator/GeneratorFactory.h"
 #include "include/log4cplus.h"
 #include <chrono>
 #include <execution>

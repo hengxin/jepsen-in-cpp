@@ -160,18 +160,20 @@ void Runner::runCases() {
     JepsenContext ctx(concurrency);
     OperationQueuePtr completions = std::make_shared<OperationQueue>(concurrency + 1);
 
-    // workers[kNemesisProcess] is nemesis and others are clients
-    workers.reserve(concurrency + 1);
-    for (int i = 0; i < concurrency; i++) {
-        auto node = nodes[i % nodes.size()];
-        workers.emplace_back(std::make_shared<ClientWorker>(i, completions, node));
-        process_to_thread[i] = i;
-    }
-    // workers.emplace_back(std::make_shared<NemesisWorker>(kNemesisProcess, completions));
-    // process_to_thread[kNemesisProcess] = kNemesisProcess;
+    {   // TODO: Init workers for clients and nemesis (ready for add nemesis)
+        // workers[kNemesisProcess] is nemesis and others are clients
+        workers.reserve(concurrency + 1);
+        for (int i = 0; i < concurrency; i++) {
+            auto node = nodes[i % nodes.size()];
+            workers.emplace_back(std::make_shared<ClientWorker>(i, completions, node));
+            process_to_thread[i] = i;
+        }
+        // workers.emplace_back(std::make_shared<NemesisWorker>(kNemesisProcess, completions));
+        // process_to_thread[kNemesisProcess] = kNemesisProcess;
 
-    for (auto& worker : workers) {
-        worker->run();
+        for (auto& worker : workers) {
+            worker->run();
+        }
     }
 
     int outstanding = 0;
@@ -188,7 +190,7 @@ void Runner::runCases() {
             op.time = time;
             ctx.time = time;
             ctx.free_threads.insert(thread);
-            generator->update(ctx, op);
+            generator = generator::update(generator, ctx, op);
             // it is not nemesis
             if (op.process != kNemesisProcess && op.type == Operation::kInfo) {
                 auto next_process = op.process + concurrency;
@@ -201,7 +203,7 @@ void Runner::runCases() {
         } else {
             auto time = std::chrono::system_clock::now().time_since_epoch().count();
             ctx.time = time;
-            auto [op, gen] = generator::op(generator, ctx);
+            auto [op, gen2] = generator::op(generator, ctx);
             switch (op.type) {
                 case Operation::kNil:
                 case Operation::kExit: {
@@ -234,7 +236,7 @@ void Runner::runCases() {
                         worker->putOp(op);
                         ctx.time = op.time;
                         ctx.free_threads.erase(thread);
-                        generator->update(ctx, op);
+                        generator = generator::update(gen2, ctx, op);
                         history.emplace_back(op);
                         outstanding++;
                         poll_timeout = microseconds(0);

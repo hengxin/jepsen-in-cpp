@@ -13,34 +13,31 @@ add_requires("tbb")
 set_languages("cxx17")
 
 -- Configuration
-target("config")
-    includes("check_cxxincludes.lua")
-    includes("check_cxxfuncs.lua")
-    includes("check_macros.lua")
-    -- Platform checks
-    -- From libssh2, refer to https://github.com/libssh2/libssh2/blob/master/example/CMakeLists.txt
-    add_files("config/main.cpp")
-    add_includedirs("config")
-    set_configdir("config")
-    add_configfiles("config/libssh2_config.h.in", {filename = "libssh2_config.h"})
-    configvar_check_cxxincludes("HAVE_INTTYPES_H", "inttypes.h")
-    configvar_check_cxxincludes("HAVE_UNISTD_H", "unistd.h")
-    configvar_check_cxxincludes("HAVE_STDLIB_H", "stdlib.h")
-    configvar_check_cxxincludes("HAVE_SYS_SELECT_H", "sys/select.h")
-    configvar_check_cxxincludes("HAVE_SYS_SOCKET_H", "sys/socket.h")
-    configvar_check_cxxincludes("HAVE_SYS_TIME_H", "sys/time.h")
-    configvar_check_cxxincludes("HAVE_ARPA_INET_H", "arpa/inet.h")
-    configvar_check_cxxincludes("HAVE_NETINET_IN_H", "netinet/in.h")
-    configvar_check_cxxincludes("HAVE_WINSOCK2_H", "winsock2.h")
+includes("check_cxxincludes.lua")
+includes("check_cxxfuncs.lua")
+includes("check_macros.lua")
+-- Platform checks
+-- From libssh2, refer to https://github.com/libssh2/libssh2/blob/master/example/CMakeLists.txt
+set_configdir("config")
+add_configfiles("config/libssh2_config.h.in", {filename = "libssh2_config.h"})
+configvar_check_cxxincludes("HAVE_INTTYPES_H", "inttypes.h")
+configvar_check_cxxincludes("HAVE_UNISTD_H", "unistd.h")
+configvar_check_cxxincludes("HAVE_STDLIB_H", "stdlib.h")
+configvar_check_cxxincludes("HAVE_SYS_SELECT_H", "sys/select.h")
+configvar_check_cxxincludes("HAVE_SYS_SOCKET_H", "sys/socket.h")
+configvar_check_cxxincludes("HAVE_SYS_TIME_H", "sys/time.h")
+configvar_check_cxxincludes("HAVE_ARPA_INET_H", "arpa/inet.h")
+configvar_check_cxxincludes("HAVE_NETINET_IN_H", "netinet/in.h")
+configvar_check_cxxincludes("HAVE_WINSOCK2_H", "winsock2.h")
 
-    configvar_check_cxxfuncs ("HAVE_STRCASECMP", "strcasecmp", {includes = {"strings.h"}})
-    configvar_check_cxxfuncs ("HAVE__STRICMP", "_stricmp", {includes = {"string.h"}})
-    configvar_check_cxxfuncs ("HAVE_SNPRINTF", "snprintf", {includes = {"stdio.h"}})
-    configvar_check_cxxfuncs ("HAVE__SNPRINTF", "_snprintf", {includes = {"stdio.h"}})
+configvar_check_cxxfuncs ("HAVE_STRCASECMP", "strcasecmp", {includes = {"strings.h"}})
+configvar_check_cxxfuncs ("HAVE__STRICMP", "_stricmp", {includes = {"string.h"}})
+configvar_check_cxxfuncs ("HAVE_SNPRINTF", "snprintf", {includes = {"stdio.h"}})
+configvar_check_cxxfuncs ("HAVE__SNPRINTF", "_snprintf", {includes = {"stdio.h"}})
 
-    configvar_check_macros("HAVE___FUNC__", "__func__")
-    configvar_check_macros("HAVE___FUNCTION__", "__FUNCTION__")
-    configvar_check_macros("HAVE___PRETTY_FUNCTION__", "__PRETTY_FUNCTION__")
+configvar_check_macros("HAVE___FUNC__", "__func__")
+configvar_check_macros("HAVE___FUNCTION__", "__FUNCTION__")
+configvar_check_macros("HAVE___PRETTY_FUNCTION__", "__PRETTY_FUNCTION__")
 
 -- Src
 -- target("control")
@@ -70,7 +67,13 @@ target("test-operation")
 target("test-runner")
     set_kind("binary")
     add_files("test/runner/*.cpp")
-    add_files("test/etcd/ETCD.cpp")
+    if is_plat("linux", "macosx") then
+        add_files("test/etcd/*.cpp")
+    end
+    if is_plat("windows") then
+        -- In windows is not a easy work to build etcd-api-v3
+        add_files("test/etcd/ETCD.cpp")
+    end
     add_files("src/jepsen/*.cpp", "src/jepsen/utils/*.cpp", "src/jepsen/generator/*.cpp")
     add_includedirs("src/jepsen")
     add_includedirs("src/jepsen/include", "src/jepsen/utils", "src/jepsen/generator")

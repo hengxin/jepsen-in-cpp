@@ -36,7 +36,7 @@ int main() {
     DBPtr db = std::make_shared<ETCD>(ETCD(nodes));
     runner.setDB(db);
     // Initialize Generator
-    std::vector<Operation> ops;
+    std::list<Operation> ops;
 
     string keys = "abcdefghijklmn";
     for (auto key : keys) {
@@ -46,8 +46,7 @@ int main() {
         ops.push_back(OperationFactory::write(key, "2"));
         ops.push_back(OperationFactory::read(key));
     }
-
-    GeneratorPtr gen = std::make_shared<VectorGenerator>(ops);
+    generator::GeneratorPtr gen = generator::GeneratorFactory::createGenerator(ops);
     runner.setGenerator(gen);
 
     runner.run();
