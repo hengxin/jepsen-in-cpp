@@ -39,14 +39,19 @@ int main() {
     std::list<Operation> ops;
 
     string keys = "abcdefghijklmn";
-    for (auto key : keys) {
-        ops.push_back(OperationFactory::read(key));
-        ops.push_back(OperationFactory::write(key, "1"));
-        ops.push_back(OperationFactory::read(key));
-        ops.push_back(OperationFactory::write(key, "2"));
-        ops.push_back(OperationFactory::read(key));
+    for(int i=0; i<100; i++) {
+        for (auto key : keys) {
+            ops.push_back(OperationFactory::read(key));
+            ops.push_back(OperationFactory::write(key, "1"));
+            ops.push_back(OperationFactory::read(key));
+            ops.push_back(OperationFactory::write(key, "2"));
+            ops.push_back(OperationFactory::read(key));
+        }
     }
     generator::GeneratorPtr gen = generator::GeneratorFactory::createGenerator(ops);
+    gen = generator::GeneratorFactory::createStagger(1, gen);
+    gen = generator::GeneratorFactory::createTimeLimit(5, gen);
+
     runner.setGenerator(gen);
 
     runner.run();

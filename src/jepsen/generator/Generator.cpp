@@ -4,7 +4,12 @@
 namespace jepsen {
 namespace generator {
 
-Operation fillInOperation(const JepsenContext& context, Operation op) {
+bool notNil(Operation& op, GeneratorPtr& gen){
+    return op.type != Operation::kNil && gen.get() != nullptr;
+}
+
+
+Operation fillInOperation(const Context& context, Operation op) {
     int process = context.randomFreeProcess();
     if (process != kInvalidProcess) {
         if (op.process == kInvalidProcess) {
@@ -22,9 +27,9 @@ Operation fillInOperation(const JepsenContext& context, Operation op) {
     return op;
 }
 
-std::pair<Operation, GeneratorPtr> op(GeneratorPtr gen, JepsenContext context) {
+std::pair<Operation, GeneratorPtr> op(GeneratorPtr gen, Context context) {
     if (gen.get() == nullptr) {
-        return {Operation(Operation::kNil), nullptr};
+        return nil;
     } else if (std::dynamic_pointer_cast<OperationGenerator>(gen) != nullptr) {
         OperationGeneratorPtr op_gen = std::dynamic_pointer_cast<OperationGenerator>(gen);
         auto ret_op = fillInOperation(context, op_gen->operation);
@@ -45,7 +50,7 @@ std::pair<Operation, GeneratorPtr> op(GeneratorPtr gen, JepsenContext context) {
             return op(GeneratorFactory::createNullptrGenerator(), context);
         } else {
             auto first_gen = list_gen->generators.front();
-            auto[op2, gen2] = op(first_gen, context);
+            auto [op2, gen2] = op(first_gen, context);
             ListGeneratorPtr copy = std::dynamic_pointer_cast<ListGenerator>(gen->copyOne());
             if (gen2.get() == nullptr && op2.type == Operation::kNil) {
                 copy->generators.pop_front();
@@ -64,7 +69,7 @@ std::pair<Operation, GeneratorPtr> op(GeneratorPtr gen, JepsenContext context) {
     }
 }
 
-GeneratorPtr update(GeneratorPtr gen, JepsenContext context, Operation event) {
+GeneratorPtr update(GeneratorPtr gen, Context context, Operation event) {
     if (gen.get() == nullptr) {
         return nullptr;
     } else if (std::dynamic_pointer_cast<OperationGenerator>(gen) != nullptr) {
@@ -86,12 +91,35 @@ GeneratorPtr update(GeneratorPtr gen, JepsenContext context, Operation event) {
     }
 }
 
-std::pair<Operation, GeneratorPtr> generator::Generator::op(JepsenContext context) {
+Context onThreadsContext(std::function<bool(int)> filter, Context ctx) {
+    Context ret = ctx;
+    ret.free_threads.clear();
+    for(auto t: ctx.free_threads) {
+        if(filter(t)) {
+            ret.free_threads.insert(t);
+        }
+    }
+    return ret;
+}
+
+GeneratorPtr clients(GeneratorPtr client_gen) {
+    return GeneratorFactory::createOnThreads(client_gen, [](int id) {
+        return id != kNemesisProcess;
+    });
+}
+
+GeneratorPtr nemesis(GeneratorPtr nemesis_gen) {
+    return GeneratorFactory::createOnThreads(nemesis_gen, [](int id) {
+        return id == kNemesisProcess;
+    });
+}
+
+std::pair<Operation, GeneratorPtr> generator::Generator::op(Context context) {
     return std::make_pair(Operation(Operation::kNil), nullptr);
 }
 
-GeneratorPtr generator::Generator::update(JepsenContext context, Operation event) {
-    return jepsen::generator::GeneratorPtr();
+GeneratorPtr generator::Generator::update(Context context, Operation event) {
+    return nullptr;
 }
 
 GeneratorPtr Generator::copyOne() {
@@ -111,14 +139,14 @@ GeneratorPtr FunctionGenerator::copyOne() {
             return nullptr;
     }
 }
-Operation FunctionGenerator::func(JepsenContext context) {
+Operation FunctionGenerator::func(Context context) const {
     Operation ret_op = func_type == FuncType::kBase ? func_base() : func_with_context(context);
     return ret_op;
 }
 
 GeneratorPtr ListGenerator::copyOne() {
     std::list<GeneratorPtr> copy;
-    for (auto &gen: generators) {
+    for (auto& gen : generators) {
         if (gen) {
             copy.push_back(gen->copyOne());
         } else {
@@ -126,6 +154,126 @@ GeneratorPtr ListGenerator::copyOne() {
         }
     }
     return std::make_shared<ListGenerator>(copy);
+}
+
+
+std::pair<Operation, GeneratorPtr> Validate::op(Context context) {
+    auto [op2, gen2] = generator::op(gen, context);
+    if (gen2.get() != nullptr && op2.type != Operation::kNil) {
+        if (op2.type == Operation::kPending) {
+            // Do nothing
+        } else {
+            std::vector<std::string> problems;
+            // TODO: :invoke, :info, :sleep, :log
+            if (op2.type != Operation::kInvoke) {
+                problems.emplace_back(":type should be :invoke, :info, :sleep, or :log");
+            }
+            if (!problems.empty()) {
+                for (auto& problem : problems) {
+                    LOG4CPLUS_ERROR(logger, problem.c_str());
+                }
+            }
+        }
+        return std::make_pair(op2, GeneratorFactory::createValidate(gen2));
+    } else {
+        return std::make_pair(op2, gen2);
+    }
+}
+GeneratorPtr Validate::update(Context context, Operation event) {
+    GeneratorPtr gen2 = generator::update(gen, context, event);
+    return GeneratorFactory::createValidate(gen2);
+}
+GeneratorPtr Validate::copyOne() {
+    if (gen.get() == nullptr) {
+        return GeneratorFactory::createValidate(nullptr);
+    } else {
+        auto gen2 = gen->copyOne();
+        return GeneratorFactory::createValidate(gen2);
+    }
+}
+
+std::pair<Operation, GeneratorPtr> OnThreads::op(Context context) {
+    auto [op2, gen2] = generator::op(gen, generator::onThreadsContext(filter, context));
+    if (gen2.get() != nullptr && op2.type != Operation::kNil) {
+        return std::make_pair(op2, GeneratorFactory::createOnThreads(gen2, filter));
+    } else {
+        return nil;
+    }
+}
+GeneratorPtr OnThreads::update(Context context, Operation event) {
+    return Generator::update(context, event);
+}
+GeneratorPtr OnThreads::copyOne() {
+    if (gen.get() == nullptr) {
+        return GeneratorFactory::createOnThreads(nullptr, filter);
+    } else {
+        return GeneratorFactory::createOnThreads(gen->copyOne(), filter);
+    }
+}
+
+
+std::pair<Operation, GeneratorPtr> TimeLimit::op(Context context) {
+    auto [op2, gen2] = generator::op(gen, context);
+    if(notNil(op2, gen2)) {
+        switch (op2.type) {
+            case Operation::kPending:
+                return std::make_pair(op2, std::make_shared<TimeLimit>(limit, cutoff, gen2));
+            default:
+                if(cutoff == kInvalidTime) {
+                    cutoff = op2.time + limit;
+                }
+                if(op2.time < cutoff) {
+                    return std::make_pair(op2, std::make_shared<TimeLimit>(limit, cutoff, gen2));
+                } else {
+                    return nil;
+                }
+        }
+    } else{
+        return nil;
+    }
+
+}
+GeneratorPtr TimeLimit::update(Context context, Operation event) {
+    auto gen2 = generator::update(gen, context, event);
+    return std::make_shared<TimeLimit>(limit, cutoff, gen2);
+}
+GeneratorPtr TimeLimit::copyOne() {
+    if(gen.get() == nullptr) {
+        return nullptr;
+    }else {
+        return std::make_shared<TimeLimit>(limit, cutoff, gen);
+    }
+}
+
+std::pair<Operation, GeneratorPtr> Stagger::op(Context context) {
+    auto [op2, gen2] = generator::op(gen, context);
+    if(notNil(op2, gen2)) {
+        if(next_time == kInvalidTime) {
+            next_time = context.time;
+        }
+        if(op2.type == Operation::kPending) {
+            return std::make_pair(op2, std::make_shared<Stagger>(*this));
+        }else {
+            auto next_gen = std::make_shared<Stagger>(dt, next_time + rand()%dt, gen2);
+            if(next_time > op2.time) {
+                op2.time = next_time;
+            }
+            return std::make_pair(op2, next_gen);
+        }
+    } else{
+        return nil;
+    }
+}
+GeneratorPtr Stagger::update(Context context, Operation event) {
+    auto gen2 = generator::update(gen, context, event);
+    return std::make_shared<Stagger>(dt, next_time, gen2);
+}
+GeneratorPtr Stagger::copyOne() {
+    if(gen.get() == nullptr) {
+        return nullptr;
+    }else {
+        return std::make_shared<Stagger>(dt, next_time, gen);
+    }
 }
 
 }  // namespace generator

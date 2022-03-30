@@ -2,7 +2,7 @@
 
 namespace jepsen {
 
-int JepsenContext::randomFreeProcess() const {
+int Context::randomFreeProcess() const {
     int n = free_threads.size();
     if (n != 0) {
         auto it = free_threads.begin();

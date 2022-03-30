@@ -32,7 +32,7 @@ void testETCDWorker() {
     shared_ptr<Worker> p1 = std::make_shared<ClientWorker>(1, completions, b0);
     auto ops = randomOperations();
     GeneratorPtr gen = std::make_shared<VectorGenerator>(ops);
-    JepsenContext ctx(1);
+    Context ctx(1);
 
     while (true) {
         auto op = gen->op(ctx);

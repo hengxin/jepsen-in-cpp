@@ -15,12 +15,12 @@ void SSHRemote::connect(ConnSpec conn_spec) {}
 
 void SSHRemote::disconnect() {}
 
-int SSHRemote::execute(Context ctx, string cmd, string in) {
+int SSHRemote::execute(SSHContext ctx, string cmd, string in) {
     string out, err;
     return ssh_client.execute(cmd, out, err);
 }
 
-int SSHRemote::execute(Context ctx, string cmd, string in, string& _stdout, string& _stderr) {
+int SSHRemote::execute(SSHContext ctx, string cmd, string in, string& _stdout, string& _stderr) {
     return ssh_client.execute(cmd, _stdout, _stderr);
 }
 
@@ -50,7 +50,7 @@ int SSHRemote::sudoExecute(string cmd) {
 }
 
 
-void SSHRemote::upload(Context ctx, string local_path, string remote_path) {}
+void SSHRemote::upload(SSHContext ctx, string local_path, string remote_path) {}
 
-void SSHRemote::download(Context ctx, string remote_path, string local_path) {}
+void SSHRemote::download(SSHContext ctx, string remote_path, string local_path) {}
 }  // namespace jepsen

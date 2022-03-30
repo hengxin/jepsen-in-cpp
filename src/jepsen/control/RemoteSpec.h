@@ -25,12 +25,12 @@ struct ConnSpec {
           strict_host_key_checking(strict_host_key_checking) {}
 };
 
-struct Context {
+struct SSHContext {
     string dir;
     string sudo;
     string password;
-    Context() = default;
-    Context(string dir, string sudo, string password) : dir(dir), sudo(sudo), password(password) {}
+    SSHContext() = default;
+    SSHContext(string dir, string sudo, string password) : dir(dir), sudo(sudo), password(password) {}
 };
 }  // namespace jepsen
 

@@ -3,7 +3,7 @@
 
 #include "RemoteSpec.h"
 #include "SSHConfig.h"
-#include "include/log4cplus.h"
+#include "../include/log4cplus.h"
 
 namespace jepsen {
 using std::cerr;

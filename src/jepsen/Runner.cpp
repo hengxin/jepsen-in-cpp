@@ -49,8 +49,8 @@ void Runner::setDB(DBPtr& db) {
 }
 
 
-void Runner::setGenerator(generator::GeneratorPtr& generator) {
-    this->generator = generator;
+void Runner::setGenerator(generator::GeneratorPtr generator) {
+    this->generator = generator::GeneratorFactory::createValidate(generator);
 }
 
 void Runner::setChecker(shared_ptr<Checker>& checker) {
@@ -157,7 +157,7 @@ void Runner::saveHistory() {
 }
 
 void Runner::runCases() {
-    JepsenContext ctx(concurrency);
+    Context ctx(concurrency);
     OperationQueuePtr completions = std::make_shared<OperationQueue>(concurrency + 1);
 
     {   // TODO: Init workers for clients and nemesis (ready for add nemesis)

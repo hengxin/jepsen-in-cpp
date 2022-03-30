@@ -59,7 +59,7 @@ public:
     void setOS(OSPtr& os);
     void setDB(DBPtr& db);
     void setClientAndNemesis();
-    void setGenerator(generator::GeneratorPtr& generator);
+    void setGenerator(generator::GeneratorPtr generator);
     void setChecker(shared_ptr<Checker>& checker);
 
     // OS

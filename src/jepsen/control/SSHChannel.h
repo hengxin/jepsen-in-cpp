@@ -2,7 +2,7 @@
 #define SSH_CHANNEL_H
 
 #include "SSHConfig.h"
-#include "include/log4cplus.h"
+#include "../include/log4cplus.h"
 
 namespace jepsen {
 using std::string;
