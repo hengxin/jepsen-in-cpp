@@ -2,7 +2,7 @@
 #define SSH_REMOTE_H
 
 #include "Remote.h"
-#include "SSHClient.h"
+#include "control/SSHClient.h"
 #include "include/log4cplus.h"
 #include <boost/format.hpp>  // boost
 #include <memory>

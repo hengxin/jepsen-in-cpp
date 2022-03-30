@@ -3,7 +3,7 @@
 
 #include "Config.h"
 #include "Operation.h"
-#include "SSHRemote.h"
+#include "control/SSHRemote.h"
 
 #include "include/log4cplus.h"
 #include <memory>

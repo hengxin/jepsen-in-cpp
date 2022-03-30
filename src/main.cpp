@@ -1,4 +1,4 @@
-#include "jepsen/SSHClient.h"
+#include "jepsen/control/SSHClient.h"
 #include <iostream>
 #include <thread>
 

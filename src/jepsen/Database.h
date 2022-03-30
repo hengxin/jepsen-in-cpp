@@ -1,7 +1,7 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include "SSHRemote.h"
+#include "control/SSHRemote.h"
 
 #include "include/log4cplus.h"
 #include <memory>

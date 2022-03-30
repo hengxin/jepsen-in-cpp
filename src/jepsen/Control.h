@@ -1,7 +1,7 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#include "SSHRemote.h"
+#include "control/SSHRemote.h"
 #include "base64.h"
 #include "include/log4cplus.h"
 #include <boost/algorithm/string.hpp>

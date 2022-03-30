@@ -6,7 +6,7 @@
 #include "Database.h"
 #include "OS.h"
 #include "Operation.h"
-#include "SSHRemote.h"
+#include "control/SSHRemote.h"
 #include "Worker.h"
 #include "generator/Generator.h"
 #include "generator/GeneratorFactory.h"

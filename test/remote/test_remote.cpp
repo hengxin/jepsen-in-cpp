@@ -1,4 +1,4 @@
-#include "SSHRemote.h"
+#include "control/SSHRemote.h"
 #include <boost/algorithm/string.hpp>
 
 using namespace jepsen;

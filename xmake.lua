@@ -74,9 +74,9 @@ target("test-runner")
         -- In windows is not a easy work to build etcd-api-v3
         add_files("test/etcd/ETCD.cpp")
     end
-    add_files("src/jepsen/*.cpp", "src/jepsen/utils/*.cpp", "src/jepsen/generator/*.cpp")
+    add_files("src/jepsen/*.cpp", "src/jepsen/utils/*.cpp", "src/jepsen/control/*.cpp", "src/jepsen/generator/*.cpp")
     add_includedirs("src/jepsen")
-    add_includedirs("src/jepsen/include", "src/jepsen/utils", "src/jepsen/generator")
+    add_includedirs("src/jepsen/include", "src/jepsen/utils", "src/jepsen/control", "src/jepsen/generator")
     add_includedirs("test/etcd")
     add_includedirs("config")
     add_packages("jsoncpp", "log4cplus", "libssh2", "boost", "concurrentqueue", "tbb")

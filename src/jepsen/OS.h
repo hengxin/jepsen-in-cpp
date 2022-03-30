@@ -1,7 +1,7 @@
 #ifndef OS_H
 #define OS_H
 
-#include "SSHRemote.h"
+#include "control/SSHRemote.h"
 
 #include "include/log4cplus.h"
 #include <memory>
