@@ -1,6 +1,6 @@
 #include "ETCDClient.h"
-#include "Generator.h"
 #include "Worker.h"
+#include "generator/Generator.h"
 #include <future>
 
 using namespace jepsen;

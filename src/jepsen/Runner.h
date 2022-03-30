@@ -4,11 +4,11 @@
 #include "Checker.h"
 #include "Context.h"
 #include "Database.h"
-#include "Generator.h"
 #include "OS.h"
 #include "Operation.h"
 #include "SSHRemote.h"
 #include "Worker.h"
+#include "generator/Generator.h"
 #include "include/log4cplus.h"
 #include <chrono>
 #include <execution>
@@ -58,7 +58,7 @@ public:
     void setOS(OSPtr& os);
     void setDB(DBPtr& db);
     void setClientAndNemesis();
-    void setGenerator(GeneratorPtr& generator);
+    void setGenerator(generator::GeneratorPtr& generator);
     void setChecker(shared_ptr<Checker>& checker);
 
     // OS
@@ -84,7 +84,7 @@ private:
     OSPtr os;
     DBPtr db;
 
-    GeneratorPtr generator;
+    generator::GeneratorPtr generator;
     shared_ptr<Checker> checker;
 
     std::vector<WorkerPtr> workers;

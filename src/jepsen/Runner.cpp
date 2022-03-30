@@ -49,7 +49,7 @@ void Runner::setDB(DBPtr& db) {
 }
 
 
-void Runner::setGenerator(GeneratorPtr& generator) {
+void Runner::setGenerator(generator::GeneratorPtr& generator) {
     this->generator = generator;
 }
 
@@ -201,7 +201,7 @@ void Runner::runCases() {
         } else {
             auto time = std::chrono::system_clock::now().time_since_epoch().count();
             ctx.time = time;
-            auto op = generator->op(ctx);
+            auto [op, gen] = generator::op(generator, ctx);
             switch (op.type) {
                 case Operation::kNil:
                 case Operation::kExit: {
