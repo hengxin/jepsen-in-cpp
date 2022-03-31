@@ -186,7 +186,7 @@ void Runner::runCases() {
             LOG4CPLUS_INFO(logger, "Get a completed operation " << op.toString().c_str());
             auto thread = process_to_thread[op.process];
             auto& worker = workers[thread];  // TODO: process and thread , mod?
-            auto time = std::chrono::system_clock::now().time_since_epoch().count();
+            auto time = getRelativeTime();
             op.time = time;
             ctx.time = time;
             ctx.free_threads.insert(thread);
@@ -201,7 +201,7 @@ void Runner::runCases() {
             outstanding--;
             poll_timeout = microseconds(0);
         } else {
-            auto time = std::chrono::system_clock::now().time_since_epoch().count();
+            auto time = getRelativeTime();
             ctx.time = time;
             auto [op, gen2] = generator::op(generator, ctx);
             switch (op.type) {
@@ -254,7 +254,7 @@ void Runner::run() {
     teardownDB();
     setupDB();
 
-    relative_time = std::chrono::system_clock::now().time_since_epoch().count();
+    relative_time = getRelativeTime();
     setupClientNemesis();
     runCases();
     teardownClientNemesis();

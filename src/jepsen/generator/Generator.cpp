@@ -4,7 +4,7 @@
 namespace jepsen {
 namespace generator {
 
-bool notNil(Operation& op, GeneratorPtr& gen){
+bool notNil(Operation& op, GeneratorPtr& gen) {
     return op.type != Operation::kNil && gen.get() != nullptr;
 }
 
@@ -94,8 +94,8 @@ GeneratorPtr update(GeneratorPtr gen, Context context, Operation event) {
 Context onThreadsContext(std::function<bool(int)> filter, Context ctx) {
     Context ret = ctx;
     ret.free_threads.clear();
-    for(auto t: ctx.free_threads) {
-        if(filter(t)) {
+    for (auto t : ctx.free_threads) {
+        if (filter(t)) {
             ret.free_threads.insert(t);
         }
     }
@@ -103,15 +103,35 @@ Context onThreadsContext(std::function<bool(int)> filter, Context ctx) {
 }
 
 GeneratorPtr clients(GeneratorPtr client_gen) {
-    return GeneratorFactory::createOnThreads(client_gen, [](int id) {
-        return id != kNemesisProcess;
-    });
+    return GeneratorFactory::createOnThreads(client_gen,
+                                             [](int id) { return id != kNemesisProcess; });
 }
 
 GeneratorPtr nemesis(GeneratorPtr nemesis_gen) {
-    return GeneratorFactory::createOnThreads(nemesis_gen, [](int id) {
-        return id == kNemesisProcess;
-    });
+    return GeneratorFactory::createOnThreads(nemesis_gen,
+                                             [](int id) { return id == kNemesisProcess; });
+}
+
+GeneratorPtr timeLimit(long dt, GeneratorPtr gen) {
+    return GeneratorFactory::createTimeLimit(sec2nanos(dt), gen);
+}
+
+GeneratorPtr stagger(long dt, GeneratorPtr gen) {
+    return GeneratorFactory::createStagger(2 * sec2nanos(dt), gen);
+}
+
+GeneratorPtr mix(std::vector<GeneratorPtr> gens) {
+    int idx = rand() % gens.size();
+    return GeneratorFactory::createMix(idx, gens);
+}
+
+GeneratorPtr mix(std::vector<Operation> ops) {
+    std::vector<GeneratorPtr> gens;
+    gens.reserve(ops.size());
+    for (auto& op : ops) {
+        gens.push_back(GeneratorFactory::createGenerator(op));
+    }
+    return mix(gens);
 }
 
 std::pair<Operation, GeneratorPtr> generator::Generator::op(Context context) {
@@ -214,66 +234,101 @@ GeneratorPtr OnThreads::copyOne() {
 
 std::pair<Operation, GeneratorPtr> TimeLimit::op(Context context) {
     auto [op2, gen2] = generator::op(gen, context);
-    if(notNil(op2, gen2)) {
+    if (notNil(op2, gen2)) {
         switch (op2.type) {
             case Operation::kPending:
                 return std::make_pair(op2, std::make_shared<TimeLimit>(limit, cutoff, gen2));
             default:
-                if(cutoff == kInvalidTime) {
+                if (cutoff == kInvalidTime) {
                     cutoff = op2.time + limit;
                 }
-                if(op2.time < cutoff) {
+                if (op2.time < cutoff) {
                     return std::make_pair(op2, std::make_shared<TimeLimit>(limit, cutoff, gen2));
                 } else {
                     return nil;
                 }
         }
-    } else{
+    } else {
         return nil;
     }
-
 }
 GeneratorPtr TimeLimit::update(Context context, Operation event) {
     auto gen2 = generator::update(gen, context, event);
-    return std::make_shared<TimeLimit>(limit, cutoff, gen2);
+    return GeneratorFactory::createTimeLimit(limit, cutoff, gen2);
 }
 GeneratorPtr TimeLimit::copyOne() {
-    if(gen.get() == nullptr) {
+    if (gen.get() == nullptr) {
         return nullptr;
-    }else {
-        return std::make_shared<TimeLimit>(limit, cutoff, gen);
+    } else {
+        return GeneratorFactory::createTimeLimit(limit, cutoff, gen->copyOne());
     }
 }
 
 std::pair<Operation, GeneratorPtr> Stagger::op(Context context) {
     auto [op2, gen2] = generator::op(gen, context);
-    if(notNil(op2, gen2)) {
-        if(next_time == kInvalidTime) {
+    if (notNil(op2, gen2)) {
+        if (next_time == kInvalidTime) {
             next_time = context.time;
         }
-        if(op2.type == Operation::kPending) {
+        if (op2.type == Operation::kPending) {
             return std::make_pair(op2, std::make_shared<Stagger>(*this));
-        }else {
-            auto next_gen = std::make_shared<Stagger>(dt, next_time + rand()%dt, gen2);
-            if(next_time > op2.time) {
+        } else {
+            auto next_gen = GeneratorFactory::createStagger(dt, next_time + rand() % dt, gen2);
+            if (next_time > op2.time) {
                 op2.time = next_time;
             }
             return std::make_pair(op2, next_gen);
         }
-    } else{
+    } else {
         return nil;
     }
 }
 GeneratorPtr Stagger::update(Context context, Operation event) {
     auto gen2 = generator::update(gen, context, event);
-    return std::make_shared<Stagger>(dt, next_time, gen2);
+    return GeneratorFactory::createStagger(dt, next_time, gen2);
 }
 GeneratorPtr Stagger::copyOne() {
-    if(gen.get() == nullptr) {
+    if (gen.get() == nullptr) {
         return nullptr;
-    }else {
-        return std::make_shared<Stagger>(dt, next_time, gen);
+    } else {
+        return GeneratorFactory::createStagger(dt, next_time, gen->copyOne());
     }
+}
+
+std::pair<Operation, GeneratorPtr> Mix::op(Context context) {
+    if (!gens.empty()) {
+        auto [op2, gen2] = generator::op(gens[idx], context);
+        std::vector<GeneratorPtr> copy;
+        copy.reserve(gens.size());
+
+        if (notNil(op2, gen2)) {
+            for(auto& gen: gens) {
+                copy.push_back(gen->copyOne());
+            }
+            copy[idx] = gen2;
+            return std::make_pair(op2, mix(copy));
+        } else {
+            for(int i=0; i<gens.size(); i++) {
+                if(i == idx) {
+                    continue;
+                }
+                copy.push_back(gens[i]->copyOne());
+            }
+            return generator::op(mix(copy), context);
+        }
+    }
+    return nil;
+}
+GeneratorPtr Mix::update(Context context, Operation event) {
+    return GeneratorFactory::createMix(idx, gens);
+}
+GeneratorPtr Mix::copyOne() {
+    std::vector<GeneratorPtr> copy;
+    copy.reserve(gens.size());
+    for(auto& gen: gens) {
+        copy.push_back(gen->copyOne());
+    }
+    return GeneratorFactory::createMix(idx, gens);;
 }
 
 }  // namespace generator

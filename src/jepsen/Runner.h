@@ -6,11 +6,12 @@
 #include "Database.h"
 #include "OS.h"
 #include "Operation.h"
-#include "control/SSHRemote.h"
 #include "Worker.h"
+#include "control/SSHRemote.h"
 #include "generator/Generator.h"
 #include "generator/GeneratorFactory.h"
 #include "include/log4cplus.h"
+#include "utils/TimeHelper.h"
 #include <chrono>
 #include <execution>
 #include <future>
@@ -51,6 +52,8 @@ public:
           leave_db_running(leave_db_running) {
         this->initLogger();
         this->initRemotes();
+        // Random seed
+        srand(time(nullptr));
     }
     void run();
     void runCases();

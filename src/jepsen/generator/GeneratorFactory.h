@@ -50,11 +50,23 @@ public:
     }
 
     static TimeLimitPtr createTimeLimit(long dt, GeneratorPtr gen) {
-        return std::make_shared<TimeLimit>(dt*1e9, gen);
+        return std::make_shared<TimeLimit>(dt, gen);
+    }
+
+    static TimeLimitPtr createTimeLimit(long dt, long cutoff, GeneratorPtr gen) {
+        return std::make_shared<TimeLimit>(dt, cutoff, gen);
     }
 
     static StaggerPtr createStagger(long dt, GeneratorPtr gen) {
-        return std::make_shared<Stagger>(dt*2*1e9, gen);
+        return std::make_shared<Stagger>(dt, gen);
+    }
+
+    static StaggerPtr createStagger(long dt, long next_time, GeneratorPtr gen) {
+        return std::make_shared<Stagger>(dt, next_time, gen);
+    }
+
+    static MixPtr createMix(int idx, std::vector<GeneratorPtr> gens) {
+        return std::make_shared<Mix>(idx, gens);
     }
 
 };

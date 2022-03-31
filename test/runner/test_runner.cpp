@@ -48,9 +48,22 @@ int main() {
             ops.push_back(OperationFactory::read(key));
         }
     }
-    generator::GeneratorPtr gen = generator::GeneratorFactory::createGenerator(ops);
-    gen = generator::GeneratorFactory::createStagger(1, gen);
-    gen = generator::GeneratorFactory::createTimeLimit(5, gen);
+
+    auto r = [&keys]() {
+        return OperationFactory::read(keys[rand() % keys.size()]);
+    };
+
+    auto w = [&keys]() {
+        return OperationFactory::write(keys[rand() % keys.size()], rand() % keys.size());
+    };
+
+    vector<generator::GeneratorPtr> gens;
+    gens.push_back(generator::GeneratorFactory::createGenerator(r));
+    gens.push_back(generator::GeneratorFactory::createGenerator(w));
+
+    generator::GeneratorPtr gen = mix(gens);
+    gen = generator::stagger(1, gen);
+    gen = generator::timeLimit(5, gen);
 
     runner.setGenerator(gen);
 

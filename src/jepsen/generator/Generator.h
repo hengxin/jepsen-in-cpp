@@ -2,6 +2,7 @@
 #define GENERATOR_H
 
 #include "../include/log4cplus.h"
+#include "../utils/TimeHelper.h"
 #include "Context.h"
 #include <functional>
 #include <list>
@@ -19,6 +20,8 @@ class Validate;
 class OnThreads;
 class TimeLimit;
 class Stagger;
+class Mix;
+class Any;
 
 using GeneratorPtr = std::shared_ptr<Generator>;
 using OperationGeneratorPtr = std::shared_ptr<OperationGenerator>;
@@ -28,6 +31,8 @@ using ValidatePtr = std::shared_ptr<Validate>;
 using OnThreadsPtr = std::shared_ptr<OnThreads>;
 using TimeLimitPtr = std::shared_ptr<TimeLimit>;
 using StaggerPtr = std::shared_ptr<Stagger>;
+using MixPtr = std::shared_ptr<Mix>;
+using AnyPtr = std::shared_ptr<Any>;
 
 // Functional Generator of 'op' and 'update'
 std::pair<Operation, GeneratorPtr> op(GeneratorPtr gen, Context context);
@@ -41,8 +46,13 @@ bool notNil(Operation& op, GeneratorPtr& gen);
 Operation fillInOperation(const Context& context, Operation op);
 // 根据filter，将不需要的thread从ctx的:free-threads中去除（留下满足filter的）
 Context onThreadsContext(std::function<bool(int)> filter, Context ctx);
+// Interface
 GeneratorPtr clients(GeneratorPtr client_gen);
 GeneratorPtr nemesis(GeneratorPtr nemesis_gen);
+GeneratorPtr timeLimit(long dt, GeneratorPtr gen);
+GeneratorPtr stagger(long dt, GeneratorPtr gen);
+GeneratorPtr mix(std::vector<GeneratorPtr> gens);
+GeneratorPtr mix(std::vector<Operation> ops);
 
 // Generator Classs
 class Generator {
@@ -146,12 +156,6 @@ private:
     std::function<bool(int)> filter;
 };
 
-class Any : public Generator {};
-
-class EachThread : public Generator {};
-
-class Reserve : public Generator {};
-
 class TimeLimit : public Generator {
 public:
     TimeLimit(long limit, const GeneratorPtr& gen) : limit(limit), cutoff(kInvalidTime), gen(gen) {}
@@ -181,6 +185,28 @@ private:
     long next_time;
     GeneratorPtr gen;
 };
+
+class Mix : public Generator {
+public:
+    Mix(int idx, const std::vector<GeneratorPtr>& gens) : idx(idx), gens(gens) {}
+    std::pair<Operation, GeneratorPtr> op(Context context) override;
+    GeneratorPtr update(Context context, Operation event) override;
+    GeneratorPtr copyOne() override;
+
+private:
+    int idx;
+    std::vector<GeneratorPtr> gens;
+};
+
+class Any : public Generator {
+public:
+private:
+
+};
+
+class EachThread : public Generator {};
+
+class Reserve : public Generator {};
 
 }  // namespace generator
 }  // namespace jepsen
