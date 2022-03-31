@@ -55,6 +55,8 @@ public:
         return true;
     };
     virtual bool invoke(Operation& op) override {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));  //休眠100毫秒
+        op.type = Operation::kSuccess;
         return true;
     };
     virtual bool teardown() override {

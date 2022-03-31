@@ -160,18 +160,19 @@ void Runner::runCases() {
     Context ctx(concurrency);
     OperationQueuePtr completions = std::make_shared<OperationQueue>(concurrency + 1);
 
-    {   // TODO: Init workers for clients and nemesis (ready for add nemesis)
+    {  // TODO: Init workers for clients and nemesis (ready for add nemesis)
         // workers[kNemesisProcess] is nemesis and others are clients
         workers.reserve(concurrency + 1);
         for (int i = 0; i < concurrency; i++) {
             auto node = nodes[i % nodes.size()];
-            workers.emplace_back(std::make_shared<ClientWorker>(i, completions, node));
-            process_to_thread[i] = i;
+            workers.emplace(i, std::make_shared<ClientWorker>(i, completions, node));
+            ctx.workers[i] = i;
         }
-         workers.emplace_back(std::make_shared<NemesisWorker>(kNemesisProcess, completions));
-         process_to_thread[kNemesisProcess] = kNemesisProcess;
+        workers.emplace(kNemesisProcess,
+                        std::make_shared<NemesisWorker>(kNemesisProcess, completions));
+        ctx.workers[kNemesisProcess] = kNemesisProcess;
 
-        for (auto& worker : workers) {
+        for (auto& [idx, worker] : workers) {
             worker->run();
         }
     }
@@ -184,8 +185,7 @@ void Runner::runCases() {
         Operation op;
         if (completions->wait_dequeue_timed(op, poll_timeout)) {
             LOG4CPLUS_INFO(logger, "Get a completed operation " << op.toString().c_str());
-            auto thread = process_to_thread[op.process];
-            auto& worker = workers[thread];  // TODO: process and thread , mod?
+            auto thread = ctx.processToThread(op.process);
             auto time = getRelativeTime();
             op.time = time;
             ctx.time = time;
@@ -193,9 +193,7 @@ void Runner::runCases() {
             generator = generator::update(generator, ctx, op);
             // it is not nemesis
             if (op.process != kNemesisProcess && op.type == Operation::kInfo) {
-                auto next_process = op.process + concurrency;
-                process_to_thread[next_process] = process_to_thread[op.process];
-                process_to_thread.erase(op.process);
+                ctx.workers[thread] = ctx.nextProcess(thread);
             }
             history.emplace_back(op);
             outstanding--;
@@ -212,11 +210,14 @@ void Runner::runCases() {
                         // LOG4CPLUS_INFO(logger, "Wating for outstanding " << outstanding);
                         continue;
                     } else {
-                        std::for_each(
-                            std::execution::par, workers.begin(), workers.end(), [](auto& worker) {
-                                worker->putOp(OperationFactory::exit());
-                                worker->exit();
-                            });
+                        std::for_each(std::execution::par,
+                                      workers.begin(),
+                                      workers.end(),
+                                      [](auto& idx2worker) {
+                                          auto& [idx, worker] = idx2worker;
+                                          worker->putOp(OperationFactory::exit());
+                                          worker->exit();
+                                      });
                         saveHistory();
                         flag = false;
                     }
@@ -231,7 +232,7 @@ void Runner::runCases() {
                         poll_timeout = microseconds((op.time - time) / 1000);
                         continue;
                     } else {
-                        auto thread = process_to_thread[op.process];
+                        auto thread = ctx.processToThread(op.process);
                         auto& worker = workers[thread];
                         worker->putOp(op);
                         ctx.time = op.time;

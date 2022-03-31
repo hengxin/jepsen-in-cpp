@@ -15,8 +15,7 @@ const string b2 = "47.108.208.93";
 int main() {
     log4cplus::Initializer initializer;
 #ifdef LOG4CPLUS_CONFIG
-    log4cplus::PropertyConfigurator::doConfigure(
-        LOG4CPLUS_TEXT(LOG4CPLUS_CONFIG));
+    log4cplus::PropertyConfigurator::doConfigure(LOG4CPLUS_TEXT(LOG4CPLUS_CONFIG));
 #endif
 
 #ifdef WIN32
@@ -39,7 +38,7 @@ int main() {
     std::list<Operation> ops;
 
     string keys = "abcdefghijklmn";
-    for(int i=0; i<100; i++) {
+    for (int i = 0; i < 100; i++) {
         for (auto key : keys) {
             ops.push_back(OperationFactory::read(key));
             ops.push_back(OperationFactory::write(key, "1"));
@@ -49,21 +48,22 @@ int main() {
         }
     }
 
-    auto r = [&keys]() {
-        return OperationFactory::read(keys[rand() % keys.size()]);
-    };
+    auto r = [&keys]() { return OperationFactory::read(keys[rand() % keys.size()]); };
 
     auto w = [&keys]() {
         return OperationFactory::write(keys[rand() % keys.size()], rand() % keys.size());
     };
 
+    auto n = []() { return OperationFactory::fakePartition(); };
+
     vector<generator::GeneratorPtr> gens;
     gens.push_back(generator::GeneratorFactory::createGenerator(r));
     gens.push_back(generator::GeneratorFactory::createGenerator(w));
+    auto partition = generator::GeneratorFactory::createGenerator(n);
 
     generator::GeneratorPtr gen = mix(gens);
     gen = generator::stagger(1, gen);
-//    gen = generator::nemesis(nullptr, gen);
+    gen = generator::nemesis(partition, gen);
     gen = generator::timeLimit(5, gen);
 
     runner.setGenerator(gen);

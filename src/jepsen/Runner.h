@@ -91,8 +91,7 @@ private:
     generator::GeneratorPtr generator;
     shared_ptr<Checker> checker;
 
-    std::vector<WorkerPtr> workers;
-    std::unordered_map<int, int> process_to_thread;
+    std::unordered_map<int, WorkerPtr> workers;
     std::vector<Operation> history;
 
     // TODO: shared a shared_ptr<unordered_map> ?

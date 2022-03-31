@@ -99,6 +99,14 @@ Context onThreadsContext(std::function<bool(int)> filter, Context ctx) {
             ret.free_threads.insert(t);
         }
     }
+
+    for (const auto& [t, p] : ctx.workers) {
+        if (filter(t)) {
+            continue;
+        }
+        ret.workers.erase(t);
+    }
+
     return ret;
 }
 
@@ -268,7 +276,7 @@ std::pair<Operation, GeneratorPtr> OnThreads::op(Context context) {
 }
 GeneratorPtr OnThreads::update(Context context, Operation event) {
     // TODO: event.process with map
-    if(filter(event.process)) {
+    if (filter(context.processToThread(event.process))) {
         auto gen2 = generator::update(gen, generator::onThreadsContext(filter, context), event);
         return GeneratorFactory::createOnThreads(gen2, filter);
     }

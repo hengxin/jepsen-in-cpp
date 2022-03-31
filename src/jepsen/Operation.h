@@ -88,6 +88,14 @@ public:
         Operation::OPInfo op;
         return Operation("pending", op, Operation::kPending);
     }
+
+    static Operation fakePartition() {
+        Operation::OPInfo op;
+        op["class"] = "partition";
+        auto res = Operation("partition", op, Operation::kInvoke);
+        res.process = kNemesisProcess;
+        return res;
+    }
 };
 
 }  // namespace jepsen

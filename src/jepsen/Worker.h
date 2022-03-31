@@ -23,7 +23,8 @@ public:
         t_name = "baseWorker";
     }
     virtual bool open(int id) = 0;
-    virtual bool invoke(Operation& op) = 0;
+    virtual bool invoke(Operation& op) = 0;  // TODO: Consider return an operation instead of update
+                                             // the input op(without side effect)
     virtual bool close() = 0;
     void run();
     Operation runAsync();

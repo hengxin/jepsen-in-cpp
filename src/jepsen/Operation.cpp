@@ -79,9 +79,15 @@ string Operation::toString(OPInfo& jop) {
 
 
 string Operation::toString() {
-    boost::format fmt("{:type %s, :f %s, :value %s, :process %d, :time %lld}");
-    fmt % TypeStr[type] % func % toString(op) % process % time;
-    return fmt.str();
+    if (process == kNemesisProcess) {
+        boost::format fmt("{:type %s, :f %s, :value %s, :process Nemesis, :time %lld}");
+        fmt % TypeStr[type] % func % toString(op) % time;
+        return fmt.str();
+    } else {
+        boost::format fmt("{:type %s, :f %s, :value %s, :process %d, :time %lld}");
+        fmt % TypeStr[type] % func % toString(op) % process % time;
+        return fmt.str();
+    }
 }
 
 }  // namespace jepsen
