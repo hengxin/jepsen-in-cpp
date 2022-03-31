@@ -168,8 +168,8 @@ void Runner::runCases() {
             workers.emplace_back(std::make_shared<ClientWorker>(i, completions, node));
             process_to_thread[i] = i;
         }
-        // workers.emplace_back(std::make_shared<NemesisWorker>(kNemesisProcess, completions));
-        // process_to_thread[kNemesisProcess] = kNemesisProcess;
+         workers.emplace_back(std::make_shared<NemesisWorker>(kNemesisProcess, completions));
+         process_to_thread[kNemesisProcess] = kNemesisProcess;
 
         for (auto& worker : workers) {
             worker->run();

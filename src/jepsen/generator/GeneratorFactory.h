@@ -69,6 +69,10 @@ public:
         return std::make_shared<Mix>(idx, gens);
     }
 
+    static AnyPtr createAny(std::vector<GeneratorPtr> gens) {
+        return std::make_shared<Any>(gens);
+    }
+
 };
 }  // namespace generator
 }  // namespace jepsen

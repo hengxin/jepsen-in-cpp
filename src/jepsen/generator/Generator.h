@@ -46,13 +46,17 @@ bool notNil(Operation& op, GeneratorPtr& gen);
 Operation fillInOperation(const Context& context, Operation op);
 // 根据filter，将不需要的thread从ctx的:free-threads中去除（留下满足filter的）
 Context onThreadsContext(std::function<bool(int)> filter, Context ctx);
+std::tuple<Operation, int, int> soonestOpMap(std::tuple<Operation, int, int> m1, std::tuple<Operation, int, int> m2);
 // Interface
 GeneratorPtr clients(GeneratorPtr client_gen);
+GeneratorPtr clients(GeneratorPtr client_gen, GeneratorPtr nemesis_gen);
 GeneratorPtr nemesis(GeneratorPtr nemesis_gen);
+GeneratorPtr nemesis(GeneratorPtr nemesis_gen, GeneratorPtr client_gen);
 GeneratorPtr timeLimit(long dt, GeneratorPtr gen);
 GeneratorPtr stagger(long dt, GeneratorPtr gen);
 GeneratorPtr mix(std::vector<GeneratorPtr> gens);
 GeneratorPtr mix(std::vector<Operation> ops);
+GeneratorPtr any(std::vector<GeneratorPtr> gens);
 
 // Generator Classs
 class Generator {
@@ -198,10 +202,17 @@ private:
     std::vector<GeneratorPtr> gens;
 };
 
+
+
 class Any : public Generator {
 public:
+    Any(const std::vector<GeneratorPtr>& gens) : gens(gens) {}
+    std::pair<Operation, GeneratorPtr> op(Context context) override;
+    GeneratorPtr update(Context context, Operation event) override;
+    GeneratorPtr copyOne() override;
+    void updateOne(int idx, GeneratorPtr gen);
 private:
-
+    std::vector<GeneratorPtr> gens;
 };
 
 class EachThread : public Generator {};

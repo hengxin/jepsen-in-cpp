@@ -13,7 +13,11 @@ Operation Worker::runAsync() {
     log4cplus::NDC& ndc = log4cplus::getNDC();
     log4cplus::tstring name(t_name.begin(), t_name.end());
     log4cplus::NDCContextCreator _first_ndc(name);
-    LOG4CPLUS_INFO(logger, getName().c_str() << " Start to connect to node" << id);
+    if(id != kNemesisProcess) {
+        LOG4CPLUS_INFO(logger, getName().c_str() << " Start to connect to node" << id);
+    } else {
+        LOG4CPLUS_INFO(logger, getName().c_str() << " Start to setup Nemesis");
+    }
 
     while (flag) {
         Operation op;

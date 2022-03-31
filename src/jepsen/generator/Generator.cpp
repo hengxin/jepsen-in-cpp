@@ -107,9 +107,17 @@ GeneratorPtr clients(GeneratorPtr client_gen) {
                                              [](int id) { return id != kNemesisProcess; });
 }
 
+GeneratorPtr clients(GeneratorPtr client_gen, GeneratorPtr nemesis_gen) {
+    return any({clients(client_gen), nemesis(nemesis_gen)});
+}
+
 GeneratorPtr nemesis(GeneratorPtr nemesis_gen) {
     return GeneratorFactory::createOnThreads(nemesis_gen,
                                              [](int id) { return id == kNemesisProcess; });
+}
+
+GeneratorPtr nemesis(GeneratorPtr nemesis_gen, GeneratorPtr client_gen) {
+    return any({nemesis(nemesis_gen), clients(client_gen)});
 }
 
 GeneratorPtr timeLimit(long dt, GeneratorPtr gen) {
@@ -132,6 +140,44 @@ GeneratorPtr mix(std::vector<Operation> ops) {
         gens.push_back(GeneratorFactory::createGenerator(op));
     }
     return mix(gens);
+}
+
+GeneratorPtr any(std::vector<GeneratorPtr> gens) {
+    switch (gens.size()) {
+        case 0:
+            return nullptr;
+        case 1:
+            return gens[0];
+        default:
+            return GeneratorFactory::createAny(gens);
+    }
+}
+
+
+std::tuple<Operation, int, int> soonestOpMap(std::tuple<Operation, int, int> m1,
+                                             std::tuple<Operation, int, int> m2) {
+    auto& [op1, w1, idx1] = m1;
+    auto& [op2, w2, idx2] = m2;
+    if (op1.type == Operation::kNil || op1.type == Operation::kPending) {
+        return m2;
+    }
+    if (op2.type == Operation::kNil || op2.type == Operation::kPending) {
+        return m1;
+    }
+
+    if (op1.time == op2.time) {
+        auto w = w1 + w2;
+        auto t = rand() % w;
+        if (t < w1) {
+            std::get<1>(m1) = w;
+            return std::move(m1);
+        } else {
+            std::get<1>(m2) = w;
+            return std::move(m2);
+        }
+    } else {
+        return op1.time < op2.time ? m1 : m2;
+    }
 }
 
 std::pair<Operation, GeneratorPtr> generator::Generator::op(Context context) {
@@ -214,14 +260,19 @@ GeneratorPtr Validate::copyOne() {
 
 std::pair<Operation, GeneratorPtr> OnThreads::op(Context context) {
     auto [op2, gen2] = generator::op(gen, generator::onThreadsContext(filter, context));
-    if (gen2.get() != nullptr && op2.type != Operation::kNil) {
+    if (notNil(op2, gen2)) {
         return std::make_pair(op2, GeneratorFactory::createOnThreads(gen2, filter));
     } else {
         return nil;
     }
 }
 GeneratorPtr OnThreads::update(Context context, Operation event) {
-    return Generator::update(context, event);
+    // TODO: event.process with map
+    if(filter(event.process)) {
+        auto gen2 = generator::update(gen, generator::onThreadsContext(filter, context), event);
+        return GeneratorFactory::createOnThreads(gen2, filter);
+    }
+    return GeneratorFactory::createOnThreads(gen, filter);
 }
 GeneratorPtr OnThreads::copyOne() {
     if (gen.get() == nullptr) {
@@ -302,14 +353,14 @@ std::pair<Operation, GeneratorPtr> Mix::op(Context context) {
         copy.reserve(gens.size());
 
         if (notNil(op2, gen2)) {
-            for(auto& gen: gens) {
+            for (auto& gen : gens) {
                 copy.push_back(gen->copyOne());
             }
             copy[idx] = gen2;
             return std::make_pair(op2, mix(copy));
         } else {
-            for(int i=0; i<gens.size(); i++) {
-                if(i == idx) {
+            for (int i = 0; i < gens.size(); i++) {
+                if (i == idx) {
                     continue;
                 }
                 copy.push_back(gens[i]->copyOne());
@@ -325,10 +376,60 @@ GeneratorPtr Mix::update(Context context, Operation event) {
 GeneratorPtr Mix::copyOne() {
     std::vector<GeneratorPtr> copy;
     copy.reserve(gens.size());
-    for(auto& gen: gens) {
+    for (auto& gen : gens) {
         copy.push_back(gen->copyOne());
     }
-    return GeneratorFactory::createMix(idx, gens);;
+    return GeneratorFactory::createMix(idx, gens);
+}
+
+std::pair<Operation, GeneratorPtr> Any::op(Context context) {
+    int n = gens.size();
+    auto cur = std::make_tuple(Operation(Operation::kNil), 1, -1);
+    GeneratorPtr res_gen = nullptr;
+    Operation res_op(Operation::kNil);
+    int res_idx = -1;
+    for (int i = 0; i < n; i++) {
+        auto& gen = gens[i];
+        auto [op2, gen2] = generator::op(gen, context);
+        if (notNil(op2, gen2)) {
+            cur = soonestOpMap(cur, std::make_tuple(op2, 1, i));
+            if (std::get<2>(cur) == i) {
+                res_gen = gen2;
+                res_op = op2;
+                res_idx = i;
+            }
+        }
+    }
+
+    if (notNil(res_op, res_gen)) {
+        AnyPtr copy = std::dynamic_pointer_cast<Any>(copyOne());
+        copy->updateOne(res_idx, res_gen);
+        return std::make_pair(res_op, copy);
+    } else {
+        return nil;
+    }
+}
+
+GeneratorPtr Any::update(Context context, Operation event) {
+    std::vector<GeneratorPtr> copy;
+    copy.reserve(gens.size());
+    for (auto& gen : gens) {
+        copy.push_back(generator::update(gen, context, event));
+    }
+    return GeneratorFactory::createAny(copy);
+}
+
+GeneratorPtr Any::copyOne() {
+    std::vector<GeneratorPtr> copy;
+    copy.reserve(gens.size());
+    for (auto& gen : gens) {
+        copy.push_back(gen->copyOne());
+    }
+    return GeneratorFactory::createAny(copy);
+}
+
+void Any::updateOne(int idx, GeneratorPtr gen) {
+    this->gens[idx] = std::move(gen);
 }
 
 }  // namespace generator

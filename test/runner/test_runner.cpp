@@ -63,6 +63,7 @@ int main() {
 
     generator::GeneratorPtr gen = mix(gens);
     gen = generator::stagger(1, gen);
+//    gen = generator::nemesis(nullptr, gen);
     gen = generator::timeLimit(5, gen);
 
     runner.setGenerator(gen);
